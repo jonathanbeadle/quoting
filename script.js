@@ -11,12 +11,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Helper function to capitalize words
+// Helper functions
 function capitalizeWords(str) {
     return str.replace(/\b\w/g, char => char.toUpperCase());
 }
 
-// Helper function to format currency
 function formatCurrency(value) {
     return parseFloat(value).toFixed(2);
 }
@@ -40,6 +39,8 @@ function validateForm() {
 
 // Function to generate the quote and display it in the output section
 function generateQuote() {
+    console.log("Generate Quote function called");
+
     if (!validateForm()) return;
 
     const make = capitalizeWords(document.getElementById('make').value);
@@ -176,7 +177,11 @@ async function viewQuoteDetails(docId) {
     }
 }
 
-// Load saved quotes if on "quotes.html"
-if (window.location.pathname.includes("quotes.html")) {
-    window.onload = displaySavedQuotes;
-}
+// Attach event listeners after the DOM content is fully loaded
+window.onload = () => {
+    console.log("Attaching event listeners");
+    const generateButton = document.querySelector("button[onclick='generateQuote()']");
+    if (generateButton) {
+        generateButton.onclick = generateQuote;
+    }
+};

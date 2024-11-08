@@ -12,27 +12,17 @@
 <body>
     <div class="container">
         <h2>Saved Quotes</h2>
-
-        <!-- List of Saved Quotes -->
         <ul id="savedQuotesList"></ul>
-
-        <!-- Button to Clear All Quotes -->
-        <button class="clearButton" onclick="clearSavedQuotesFromFirebase()">Clear All Quotes</button>
-
-        <!-- Section to Display Quote Details -->
-        <div id="quoteDetails" class="hidden">
-            <h3>Quote Details</h3>
-            <div id="quoteOutput" class="quote-output"></div>
-            <button class="backButton" onclick="hideQuoteDetails()">Back to List</button>
-        </div>
+        <div id="quoteOutput" class="email-output"></div>
+        <button id="clearQuotesButton" onclick="clearSavedQuotesFromFirebase()">Clear All Quotes</button>
+        <button id="backButton" onclick="window.location.href='index.html'">Back to Quotation Tool</button>
     </div>
 
-<!-- Replace the Firebase SDK imports with these global CDN links -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDKs (imported first) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-
-    <!-- Your custom script.js file -->
-    <script type="module" src="script.js"></script>
+    <!-- Main Script -->
+    <script src="script.js"></script>
 </body>
 </html>
