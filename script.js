@@ -1,8 +1,4 @@
-// Import Firebase modules
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// Firebase Configuration (with your credentials)
+// Initialize Firebase and Firestore
 const firebaseConfig = {
     apiKey: "AIzaSyAjAOuXElBMuBCEDRcHK6j1XQ1NK9nA6Y4",
     authDomain: "quoting-c3463.firebaseapp.com",
@@ -12,9 +8,8 @@ const firebaseConfig = {
     appId: "1:549875159098:web:28316c944261eafb21e503"
 };
 
-// Initialize Firebase and Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Helper function to capitalize words
 function capitalizeWords(str) {
@@ -57,22 +52,28 @@ function generateQuote() {
             <tr><td><strong>Processing Fee:</strong></td><td>£${processingFee}</td></tr>
         </table>`;
 
-    document.getElementById('emailOutput').innerHTML = outputHtml;
-    document.getElementById('outputSection').classList.remove('hidden');
+    const emailOutput = document.getElementById('emailOutput');
+    if (emailOutput) {
+        emailOutput.innerHTML = outputHtml;
+        document.getElementById('outputSection').classList.remove('hidden');
+    } else {
+        console.error('Element "emailOutput" not found.');
+    }
 }
 
 // Function to copy the generated quote to the clipboard
 function copyToClipboard() {
     const emailOutputDiv = document.getElementById('emailOutput');
-    const htmlToCopy = emailOutputDiv.innerHTML;
-
-    navigator.clipboard.write([
-        new ClipboardItem({ "text/html": new Blob([htmlToCopy], { type: "text/html" }) })
-    ]).then(() => {
-        alert("Copied to clipboard!");
-    }).catch(err => {
-        console.error("Failed to copy: ", err);
-    });
+    if (emailOutputDiv) {
+        const htmlToCopy = emailOutputDiv.innerHTML;
+        navigator.clipboard.writeText(htmlToCopy).then(() => {
+            alert("Copied to clipboard!");
+        }).catch(err => {
+            console.error("Failed to copy: ", err);
+        });
+    } else {
+        console.error('Element "emailOutput" not found.');
+    }
 }
 
 // Function to reset the form and hide the output section
@@ -83,14 +84,19 @@ function resetForm() {
 
 // Function to save the generated quote to Firebase Firestore
 async function saveQuoteToFirebase() {
-    const quoteHtml = document.getElementById('emailOutput').innerHTML;
+    const quoteHtml = document.getElementById('emailOutput')?.innerHTML;
     const quoteNumber = 'Q-' + Math.floor(Math.random() * 1000000);
 
+    if (!quoteHtml) {
+        console.error('Quote content is missing.');
+        return;
+    }
+
     try {
-        await addDoc(collection(db, "quotes"), {
+        await db.collection('quotes').add({
             quoteNumber,
             quoteHtml,
-            timestamp: serverTimestamp()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         alert('Quote saved to cloud successfully!');
     } catch (error) {
@@ -98,15 +104,19 @@ async function saveQuoteToFirebase() {
     }
 }
 
-// Function to display saved quotes from Firestore on the quotes.html page
+// Function to display saved quotes from Firestore
 async function displaySavedQuotes() {
     const savedQuotesList = document.getElementById('savedQuotesList');
+    if (!savedQuotesList) {
+        console.error('Element "savedQuotesList" not found.');
+        return;
+    }
+
     savedQuotesList.innerHTML = '';
 
     try {
-        const q = query(collection(db, "quotes"), orderBy("timestamp", "desc"));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
+        const snapshot = await db.collection('quotes').orderBy('timestamp', 'desc').get();
+        snapshot.forEach((doc) => {
             const quote = doc.data();
             const listItem = document.createElement('li');
             listItem.textContent = quote.quoteNumber;
@@ -120,15 +130,16 @@ async function displaySavedQuotes() {
 
 // Function to view the details of a selected quote
 async function viewQuoteDetails(docId) {
-    try {
-        const docRef = doc(db, "quotes", docId);
-        const docSnap = await getDoc(docRef);
+    const quoteOutput = document.getElementById('quoteOutput');
+    if (!quoteOutput) {
+        console.error('Element "quoteOutput" not found.');
+        return;
+    }
 
+    try {
+        const docSnap = await db.collection('quotes').doc(docId).get();
         if (docSnap.exists()) {
-            const quote = docSnap.data();
-            document.getElementById('quoteOutput').innerHTML = quote.quoteHtml;
-            document.getElementById('quoteDetails').classList.remove('hidden');
-            document.getElementById('savedQuotesList').style.display = 'none';
+            quoteOutput.innerHTML = docSnap.data().quoteHtml;
         } else {
             alert('Quote not found');
         }
@@ -137,26 +148,15 @@ async function viewQuoteDetails(docId) {
     }
 }
 
-// Function to hide quote details and go back to the list
-function hideQuoteDetails() {
-    document.getElementById('quoteOutput').innerHTML = '';
-    document.getElementById('quoteDetails').classList.add('hidden');
-    document.getElementById('savedQuotesList').style.display = 'block';
-}
-
-// Function to clear all saved quotes from Firebase Firestore
+// Function to clear all saved quotes
 async function clearSavedQuotesFromFirebase() {
-    if (confirm('Are you sure you want to delete all saved quotes?')) {
-        try {
-            const querySnapshot = await getDocs(collection(db, "quotes"));
-            querySnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-            });
-            alert('All quotes deleted successfully!');
-            displaySavedQuotes();
-        } catch (error) {
-            console.error('Error clearing saved quotes:', error);
-        }
+    if (confirm('Are you sure you want to delete all quotes?')) {
+        const snapshot = await db.collection('quotes').get();
+        const batch = db.batch();
+        snapshot.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        alert('All quotes deleted successfully!');
+        displaySavedQuotes();
     }
 }
 
