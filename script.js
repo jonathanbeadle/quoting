@@ -79,18 +79,24 @@ function copyToClipboard() {
 // Function to reset the form and hide the output section
 function resetForm() {
     document.getElementById('quoteForm').reset();
-    document.getElementById('outputSection').classList.add('hidden');
+    const outputSection = document.getElementById('outputSection');
+    if (outputSection) {
+        outputSection.classList.add('hidden');
+    } else {
+        console.error('Element "outputSection" not found.');
+    }
 }
 
 // Function to save the generated quote to Firebase Firestore
 async function saveQuoteToFirebase() {
-    const quoteHtml = document.getElementById('emailOutput')?.innerHTML;
-    const quoteNumber = 'Q-' + Math.floor(Math.random() * 1000000);
-
-    if (!quoteHtml) {
-        console.error('Quote content is missing.');
+    const emailOutput = document.getElementById('emailOutput');
+    if (!emailOutput) {
+        console.error('Element "emailOutput" not found.');
         return;
     }
+
+    const quoteHtml = emailOutput.innerHTML;
+    const quoteNumber = 'Q-' + Math.floor(Math.random() * 1000000);
 
     try {
         await db.collection('quotes').add({
@@ -148,15 +154,19 @@ async function viewQuoteDetails(docId) {
     }
 }
 
-// Function to clear all saved quotes
+// Function to clear all saved quotes from Firebase Firestore
 async function clearSavedQuotesFromFirebase() {
     if (confirm('Are you sure you want to delete all quotes?')) {
-        const snapshot = await db.collection('quotes').get();
-        const batch = db.batch();
-        snapshot.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        alert('All quotes deleted successfully!');
-        displaySavedQuotes();
+        try {
+            const snapshot = await db.collection('quotes').get();
+            const batch = db.batch();
+            snapshot.forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+            alert('All quotes deleted successfully!');
+            displaySavedQuotes();
+        } catch (error) {
+            console.error('Error clearing saved quotes:', error);
+        }
     }
 }
 
