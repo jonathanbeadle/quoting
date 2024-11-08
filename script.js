@@ -170,5 +170,8 @@ async function clearSavedQuotesFromFirebase() {
     }
 }
 
-// Load saved quotes when the quotes.html page is loaded
-window.onload = displaySavedQuotes;
+window.onload = () => {
+    if (document.getElementById('savedQuotesList')) {
+        displaySavedQuotes();
+    }
+};
