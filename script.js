@@ -28,22 +28,20 @@ function validateForm() {
 
     inputs.forEach(input => {
         if (!input.value.trim()) {
-            input.style.border = '2px solid red';
+            input.style.borderColor = 'red';
             isValid = false;
         } else {
-            input.style.border = '';
+            input.style.borderColor = '';
         }
     });
-
-    if (!isValid) {
-        alert('Please fill in all required fields.');
-    }
 
     return isValid;
 }
 
 // Function to generate the quote and display it in the output section
 function generateQuote() {
+    if (!validateForm()) return;
+
     const make = capitalizeWords(document.getElementById('make').value);
     const model = capitalizeWords(document.getElementById('model').value);
     const fundingType = capitalizeWords(document.getElementById('funding_type').value);
@@ -58,7 +56,7 @@ function generateQuote() {
     const quoteNumber = 'Q-' + Math.floor(Math.random() * 1000000);
 
     const outputHtml = `
-        <table style="width: 400px; border-collapse: collapse;">
+        <table style="width: 400px; border-collapse: collapse; border: 1px solid #ccc;">
             <tr><td><strong>Quote Number:</strong></td><td>${quoteNumber}</td></tr>
             <tr><td><strong>Vehicle Make:</strong></td><td>${make}</td></tr>
             <tr><td><strong>Vehicle Model:</strong></td><td>${model}</td></tr>
@@ -91,7 +89,7 @@ function copyToClipboard() {
         const data = [new ClipboardItem({ 'text/html': blob })];
 
         navigator.clipboard.write(data).then(() => {
-            alert("Copied to clipboard!");
+            console.log("Copied to clipboard!");
         }).catch(err => {
             console.error("Failed to copy: ", err);
         });
@@ -128,7 +126,7 @@ async function saveQuoteToFirebase() {
             quoteHtml,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert('Quote saved to cloud successfully!');
+        console.log('Quote saved to cloud successfully!');
     } catch (error) {
         console.error('Error saving quote:', error);
     }
@@ -155,6 +153,26 @@ async function displaySavedQuotes() {
         });
     } catch (error) {
         console.error('Error fetching saved quotes:', error);
+    }
+}
+
+// Function to view the details of a selected quote
+async function viewQuoteDetails(docId) {
+    const quoteOutput = document.getElementById('quoteOutput');
+    if (!quoteOutput) {
+        console.error('Element "quoteOutput" not found.');
+        return;
+    }
+
+    try {
+        const docSnap = await db.collection('quotes').doc(docId).get();
+        if (docSnap.exists()) {
+            quoteOutput.innerHTML = docSnap.data().quoteHtml;
+        } else {
+            console.error('Quote not found');
+        }
+    } catch (error) {
+        console.error('Error viewing quote details:', error);
     }
 }
 

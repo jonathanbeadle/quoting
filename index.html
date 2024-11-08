@@ -13,17 +13,16 @@
     <div class="container">
         <img src="logo.png" alt="Company Logo" class="logo">
         <h2>Quotation Tool</h2>
-        <form id="quoteForm" onsubmit="return validateForm();">
+        <form id="quoteForm">
             <div class="form-column">
                 <label for="make">Vehicle Make:</label>
-                <input type="text" id="make" name="make" required>
+                <input type="text" id="make" name="make">
 
                 <label for="model">Vehicle Model:</label>
-                <input type="text" id="model" name="model" required>
+                <input type="text" id="model" name="model">
 
                 <label for="funding_type">Funding Type:</label>
-                <select id="funding_type" name="funding_type" required>
-                    <option value="" disabled selected>Select Funding Type</option>
+                <select id="funding_type" name="funding_type">
                     <option value="finance lease">Finance Lease</option>
                     <option value="operating lease">Operating Lease</option>
                     <option value="business contract hire">Business Contract Hire</option>
@@ -31,30 +30,29 @@
                 </select>
 
                 <label for="contract_length">Contract Length (months):</label>
-                <input type="number" id="contract_length" name="contract_length" required>
+                <input type="number" id="contract_length" name="contract_length">
 
                 <label for="annual_mileage">Annual Mileage:</label>
-                <input type="number" id="annual_mileage" name="annual_mileage" required>
+                <input type="number" id="annual_mileage" name="annual_mileage">
 
                 <label for="payment_profile">Payment Profile:</label>
-                <input type="text" id="payment_profile" name="payment_profile" required">
+                <input type="text" id="payment_profile" name="payment_profile">
             </div>
             <div class="form-column">
                 <label for="maintenance">Maintenance Included:</label>
-                <select id="maintenance" name="maintenance" required>
-                    <option value="" disabled selected>Select Maintenance</option>
+                <select id="maintenance" name="maintenance">
                     <option value="Not Included">Not Included</option>
                     <option value="Included">Included</option>
                 </select>
 
                 <label for="monthly_cost">Monthly Cost (£):</label>
-                <input type="number" id="monthly_cost" name="monthly_cost" required>
+                <input type="number" id="monthly_cost" name="monthly_cost">
 
                 <label for="initial_rental">Initial Rental (£):</label>
-                <input type="number" id="initial_rental" name="initial_rental" required>
+                <input type="number" id="initial_rental" name="initial_rental">
 
                 <label for="excess_mileage_cost">Excess Mileage Cost (p/mile):</label>
-                <input type="text" id="excess_mileage_cost" name="excess_mileage_cost" required>
+                <input type="text" id="excess_mileage_cost" name="excess_mileage_cost">
 
                 <div id="salesPriceField" style="display: none;">
                     <label for="sales_price">Sales Price (£):</label>
@@ -62,9 +60,9 @@
                 </div>
 
                 <label for="processing_fee">Processing Fee (£):</label>
-                <input type="text" id="processing_fee" name="processing_fee" required>
+                <input type="text" id="processing_fee" name="processing_fee">
             </div>
-            <button type="button" onclick="if (validateForm()) generateQuote();">Generate Quote</button>
+            <button type="button" onclick="generateQuote()">Generate Quote</button>
         </form>
 
         <div id="outputSection" class="hidden">
