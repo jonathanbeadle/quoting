@@ -114,7 +114,7 @@ async function saveQuoteToFirebase() {
 async function displaySavedQuotes() {
     const savedQuotesList = document.getElementById('savedQuotesList');
     if (!savedQuotesList) {
-        console.error('Element "savedQuotesList" not found.');
+        console.error('Element "savedQuotesList" not found on this page.');
         return;
     }
 
@@ -170,6 +170,7 @@ async function clearSavedQuotesFromFirebase() {
     }
 }
 
+// Load saved quotes when the quotes.html page is loaded
 window.onload = () => {
     if (document.getElementById('savedQuotesList')) {
         displaySavedQuotes();
