@@ -21,6 +21,27 @@ function formatCurrency(value) {
     return parseFloat(value).toFixed(2);
 }
 
+// Form validation function
+function validateForm() {
+    const inputs = document.querySelectorAll('#quoteForm input, #quoteForm select');
+    let isValid = true;
+
+    inputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.style.border = '2px solid red';
+            isValid = false;
+        } else {
+            input.style.border = '';
+        }
+    });
+
+    if (!isValid) {
+        alert('Please fill in all required fields.');
+    }
+
+    return isValid;
+}
+
 // Function to generate the quote and display it in the output section
 function generateQuote() {
     const make = capitalizeWords(document.getElementById('make').value);
@@ -37,7 +58,7 @@ function generateQuote() {
     const quoteNumber = 'Q-' + Math.floor(Math.random() * 1000000);
 
     const outputHtml = `
-        <table style="width: 400px;">
+        <table style="width: 400px; border-collapse: collapse;">
             <tr><td><strong>Quote Number:</strong></td><td>${quoteNumber}</td></tr>
             <tr><td><strong>Vehicle Make:</strong></td><td>${make}</td></tr>
             <tr><td><strong>Vehicle Model:</strong></td><td>${model}</td></tr>
@@ -61,12 +82,15 @@ function generateQuote() {
     }
 }
 
-// Function to copy the generated quote to the clipboard
+// Function to copy the generated quote to the clipboard with HTML formatting
 function copyToClipboard() {
     const emailOutputDiv = document.getElementById('emailOutput');
     if (emailOutputDiv) {
         const htmlToCopy = emailOutputDiv.innerHTML;
-        navigator.clipboard.writeText(htmlToCopy).then(() => {
+        const blob = new Blob([htmlToCopy], { type: 'text/html' });
+        const data = [new ClipboardItem({ 'text/html': blob })];
+
+        navigator.clipboard.write(data).then(() => {
             alert("Copied to clipboard!");
         }).catch(err => {
             console.error("Failed to copy: ", err);
@@ -134,43 +158,7 @@ async function displaySavedQuotes() {
     }
 }
 
-// Function to view the details of a selected quote
-async function viewQuoteDetails(docId) {
-    const quoteOutput = document.getElementById('quoteOutput');
-    if (!quoteOutput) {
-        console.error('Element "quoteOutput" not found.');
-        return;
-    }
-
-    try {
-        const docSnap = await db.collection('quotes').doc(docId).get();
-        if (docSnap.exists()) {
-            quoteOutput.innerHTML = docSnap.data().quoteHtml;
-        } else {
-            alert('Quote not found');
-        }
-    } catch (error) {
-        console.error('Error viewing quote details:', error);
-    }
-}
-
-// Function to clear all saved quotes from Firebase Firestore
-async function clearSavedQuotesFromFirebase() {
-    if (confirm('Are you sure you want to delete all quotes?')) {
-        try {
-            const snapshot = await db.collection('quotes').get();
-            const batch = db.batch();
-            snapshot.forEach((doc) => batch.delete(doc.ref));
-            await batch.commit();
-            alert('All quotes deleted successfully!');
-            displaySavedQuotes();
-        } catch (error) {
-            console.error('Error clearing saved quotes:', error);
-        }
-    }
-}
-
-// Only load saved quotes if the current page is "quotes.html"
+// Load saved quotes if on "quotes.html"
 if (window.location.pathname.includes("quotes.html")) {
     window.onload = displaySavedQuotes;
 }
