@@ -1,0 +1,103 @@
+/* Custom Color Palette
+   #1a5e63 - Teal Dark
+   #238074 - Teal Medium
+   #1a9e8c - Teal Light
+   #43b6a7 - Teal Lighter
+   #ffbd38 - Gold
+   #fa4616 - Orange
+   #bb3e03 - Rust
+*/
+
+/* Background Colors */
+.bg-primary {
+    background-color: #1a5e63 !important;
+}
+
+.bg-success {
+    background-color: #238074 !important;
+}
+
+.bg-info {
+    background-color: #1a9e8c !important;
+}
+
+.bg-secondary {
+    background-color: #43b6a7 !important;
+}
+
+.bg-warning {
+    background-color: #ffbd38 !important;
+}
+
+.bg-danger {
+    background-color: #fa4616 !important;
+}
+
+.bg-rust {
+    background-color: #bb3e03 !important;
+}
+
+/* Button Colors */
+.btn-primary {
+    background-color: #1a5e63 !important;
+    border-color: #1a5e63 !important;
+}
+
+.btn-success {
+    background-color: #238074 !important;
+    border-color: #238074 !important;
+}
+
+.btn-info {
+    background-color: #1a9e8c !important;
+    border-color: #1a9e8c !important;
+}
+
+.btn-secondary {
+    background-color: #43b6a7 !important;
+    border-color: #43b6a7 !important;
+}
+
+.btn-warning {
+    background-color: #ffbd38 !important;
+    border-color: #ffbd38 !important;
+}
+
+.btn-danger {
+    background-color: #fa4616 !important;
+    border-color: #fa4616 !important;
+}
+
+.btn-rust {
+    background-color: #bb3e03 !important;
+    border-color: #bb3e03 !important;
+}
+
+/* Text colors */
+.text-primary {
+    color: #1a5e63 !important;
+}
+
+.text-success {
+    color: #238074 !important;
+}
+
+.text-info {
+    color: #1a9e8c !important;
+}
+
+.text-secondary {
+    color: #43b6a7 !important;
+}
+
+.text-warning {
+    color: #ffbd38 !important;
+}
+
+.text-danger {
+    color: #fa4616 !important;
+}
+
+.text-rust {
+    color: #bb3e03 !important;
+}
