@@ -1,0 +1,36 @@
+/* Custom styles for the accordion in the quote view page */
+.custom-accordion .accordion-item {
+  border: none;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.custom-accordion-button {
+  background-color: #f8f9fa;
+  color: #333;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem; /* Adjust header text size if needed */
+}
+
+.custom-accordion-button:not(.collapsed) {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.custom-accordion-body {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+  padding: 1rem;
+  font-size: 0.9rem; /* Adjust body text size if needed */
+}
+
+.custom-accordion-button:focus {
+  outline: none;
+  box-shadow: none;
+}
