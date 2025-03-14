@@ -2,7 +2,17 @@
 
 @section('content')
 <div class="container">
-    <h1>All Orders</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>All Orders</h1>
+        <div class="d-flex align-items-center">
+            {{ $orders->links() }}
+            <form action="{{ route('order.index') }}" method="GET" class="d-flex ms-3">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ request('search') }}">
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
     @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
     @elseif(session('error'))
@@ -41,6 +51,5 @@
             @endforeach
         </tbody>
     </table>
-    <!-- Optionally add a button to create a new order manually if needed -->
 </div>
 @endsection

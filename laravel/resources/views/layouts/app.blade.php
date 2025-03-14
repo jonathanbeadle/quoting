@@ -35,6 +35,50 @@
             border-radius: 4px;
         }
         
+        /* Pagination styling fixes */
+        .pagination {
+            margin-bottom: 0;
+        }
+        
+        .pagination .page-item .page-link {
+            font-size: 14px;
+            padding: 0.375rem 0.75rem;
+            line-height: 1.5;
+            color: #1b9e8c;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: #1b9e8c;
+            border-color: #1b9e8c;
+            color: #ffffff;
+        }
+        
+        .pagination .page-item .page-link:hover {
+            color: #157165;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-item.active .page-link:hover {
+            color: #ffffff;
+            background-color: #157165;
+            border-color: #157165;
+        }
+        
+        .pagination .page-item:first-child .page-link,
+        .pagination .page-item:last-child .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pagination .disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+        
         /* Optional: Style the scrollbar to be less obtrusive */
         ::-webkit-scrollbar {
             width: 8px;
@@ -52,7 +96,12 @@
     </style>
 </head>
 <body>
-    @include('layouts.navigation')
+    @hasSection('hide_navbar')
+        <!-- Navigation bar is hidden -->
+    @else
+        @include('layouts.navigation')
+    @endif
+    
     <main class="container py-4">
         @if(session('success'))
             <div class="alert alert-success">

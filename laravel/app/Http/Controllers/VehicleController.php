@@ -51,13 +51,28 @@ class VehicleController extends Controller
     }
     
     /**
-     * List all vehicles.
+     * List all vehicles with pagination.
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $vehicles = Vehicle::all();
+        $query = Vehicle::query();
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('make', 'like', '%' . $search . '%')
+                  ->orWhere('model', 'like', '%' . $search . '%')
+                  ->orWhere('specification', 'like', '%' . $search . '%')
+                  ->orWhere('fuel_type', 'like', '%' . $search . '%')
+                  ->orWhere('registration_status', 'like', '%' . $search . '%')
+                  ->orWhere('colour', 'like', '%' . $search . '%')
+                  ->orWhere('id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $vehicles = $query->paginate(10)->withQueryString();
         return view('vehicle.index', compact('vehicles'));
     }
     
