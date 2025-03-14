@@ -24,6 +24,17 @@ class Quote extends Model
         'sent'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'maintenance' => 'boolean',
+        'sent' => 'boolean'
+    ];
+
     public function customer()
     {
         return $this->belongsTo(\App\Models\Customer::class);

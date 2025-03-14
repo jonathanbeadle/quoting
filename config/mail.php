@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'elastic_email'),
 
     /*
     |--------------------------------------------------------------------------
@@ -45,6 +45,21 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
+        'elastic_email' => [
+            'transport' => 'elastic_email',
+            'api_key' => env('ELASTIC_EMAIL_API_KEY'),
+            'account_id' => env('ELASTIC_EMAIL_ACCOUNT_ID'),
+            'from' => [
+                'address' => env('MAIL_FROM_ADDRESS', 'quotes@fleethub.co.uk'),
+                'name' => env('MAIL_FROM_NAME', 'Fleethub Quotes'),
+            ],
+            'headers' => [
+                'List-Unsubscribe' => '<mailto:unsubscribe@fleethub.co.uk>',
+                'Feedback-ID' => 'quote-notification:fleethub',
+                'X-Entity-Ref-ID' => 'quote-notification',
+            ],
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
@@ -74,7 +89,7 @@ return [
         'failover' => [
             'transport' => 'failover',
             'mailers' => [
-                'smtp',
+                'elastic_email',
                 'log',
             ],
         ],
@@ -92,8 +107,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'quotes@fleethub.co.uk'),
+        'name' => env('MAIL_FROM_NAME', 'Fleethub Quotes'),
     ],
 
     /*

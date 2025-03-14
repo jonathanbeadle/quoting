@@ -13,6 +13,14 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
             <thead>
@@ -23,8 +31,8 @@
                     <th style="width: 8%">Contract</th>
                     <th style="width: 8%">Monthly</th>
                     <th style="width: 8%">Created</th>
-                    <th style="width: 12%">Actions</th>
-                    <th style="width: 15%">Status Update</th>
+                    <th style="width: 15%">Actions</th>
+                    <th style="width: 12%">Status Update</th>
                     <th style="width: 7%">Status</th>
                     <th style="width: 10%">Order</th>
                 </tr>
@@ -41,6 +49,12 @@
                     <td class="text-nowrap">
                         <a href="{{ route('quote.view', ['token' => $quote->token]) }}" class="btn btn-sm btn-info" target="_blank">View</a>
                         <a href="{{ route('quote.review', ['id' => $quote->id]) }}" class="btn btn-sm btn-warning">Review</a>
+                        <form action="{{ route('quote.send', ['id' => $quote->id]) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-success" title="Send quote to customer's email" {{ empty($quote->customer->email) ? 'disabled' : '' }}>
+                                <i class="fas fa-envelope"></i> Send
+                            </button>
+                        </form>
                     </td>
                     <td>
                         <form method="POST" action="{{ route('quote.updateStatus', $quote->id) }}" class="d-flex align-items-center gap-2">
@@ -62,7 +76,12 @@
                             <button type="submit" class="btn btn-sm btn-primary">Update</button>
                         </form>
                     </td>
-                    <td class="text-nowrap">{{ $quote->status }}</td>
+                    <td class="text-nowrap">
+                        {{ ucfirst($quote->status) }}
+                        @if($quote->sent)
+                            <span class="badge bg-success ms-1" title="Email sent to customer">Sent</span>
+                        @endif
+                    </td>
                     <td class="text-center">
                         @if($quote->status === 'confirmed')
                             <a href="{{ route('order.createFromQuote', ['quoteId' => $quote->id]) }}" class="btn btn-sm btn-secondary">Create Order</a>

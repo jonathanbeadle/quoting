@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'elastic_email' => [
+        'api_key' => env('ELASTIC_EMAIL_API_KEY'),
+    ],
+
 ];
