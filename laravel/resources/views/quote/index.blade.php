@@ -13,9 +13,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-      <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
             <thead>
@@ -42,7 +39,7 @@
                     <td class="text-nowrap">£{{ number_format($quote->monthly_payment, 2) }}</td>
                     <td class="text-nowrap">{{ $quote->created_at->format('d/m/Y') }}</td>
                     <td class="text-nowrap">
-                        <a href="{{ route('quote.view', ['token' => $quote->token]) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ route('quote.view', ['token' => $quote->token]) }}" class="btn btn-sm btn-info" target="_blank">View</a>
                         <a href="{{ route('quote.review', ['id' => $quote->id]) }}" class="btn btn-sm btn-warning">Review</a>
                     </td>
                     <td>

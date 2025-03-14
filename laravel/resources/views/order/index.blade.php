@@ -44,8 +44,8 @@
                     <td class="text-nowrap">{{ $order->status }}</td>
                     <td class="text-nowrap">{{ $order->created_at->format('d/m/Y') }}</td>
                     <td class="text-nowrap">
-                        <a href="{{ route('order.view', $order->id) }}" class="btn btn-sm btn-info">View</a>
-                        <a href="{{ route('order.viewByToken', ['token' => $order->token]) }}" class="btn btn-sm btn-secondary">Token View</a>
+                        <a href="{{ route('order.view', $order->id) }}" class="btn btn-sm btn-info" target="_blank">View</a>
+                        <a href="{{ route('order.viewByToken', ['token' => $order->token]) }}" class="btn btn-sm btn-secondary" target="_blank">Token View</a>
                     </td>
                 </tr>
                 @endforeach

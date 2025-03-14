@@ -102,7 +102,7 @@
                                 <td>{{ $quote->monthly_payment }}</td>
                                 <td>{{ $quote->created_at->format('Y-m-d') }}</td>
                                 <td class="text-right">
-                                <a href="{{ route('quote.view', ['token' => $quote->token]) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ route('quote.view', ['token' => $quote->token]) }}" class="btn btn-sm btn-info" target="_blank">View</a>
                                     <a href="{{ route('quote.review', ['id' => $quote->id]) }}" class="btn btn-sm btn-warning">Review</a>
                                 </td>
                             </tr>
@@ -147,7 +147,7 @@
                                 <td>{{ $order->status }}</td>
                                 <td>{{ $order->created_at->format('d/m/Y') }}</td>
                                 <td class="text-right">
-                                    <a href="{{ route('order.view', $order->id) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ route('order.view', $order->id) }}" class="btn btn-sm btn-info" target="_blank">View</a>
                                 </td>
                             </tr>
                             @endforeach
@@ -231,7 +231,7 @@
                                 <td>{{ $vehicle->registration_status }}</td>
                                 <td>{{ $vehicle->colour }}</td>
                                 <td class="text-right">
-                                    <a href="{{ route('vehicle.show', ['id' => $vehicle->id]) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ route('vehicle.show', ['id' => $vehicle->id]) }}" class="btn btn-sm btn-info" target="_blank">View</a>
                                 </td>
                             </tr>
                             @endforeach
