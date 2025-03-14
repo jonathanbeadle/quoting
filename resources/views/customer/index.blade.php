@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>All Customers</h1>
+        <h1>All Customers ({{ $customers->total() }})</h1>
         <div class="d-flex align-items-center">
             {{ $customers->links() }}
             <form action="{{ route('customer.index') }}" method="GET" class="d-flex ms-3">
@@ -12,47 +12,53 @@
             </form>
         </div>
     </div>
-    
+
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
-    
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($customers as $customer)
-            <tr>
-                <td>{{ $customer->id }}</td>
-                <td>{{ $customer->name }}</td>
-                <td>{{ $customer->email }}</td>
-                <td>{{ $customer->phone }}</td>
-                <td>
-                    <a href="{{ route('customer.show', ['id' => $customer->id]) }}" class="btn btn-sm btn-info">View</a>
-                    <a href="{{ route('customer.edit', ['id' => $customer->id]) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <button class="btn btn-sm btn-danger" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#deleteConfirmModal" 
-                            data-customer-id="{{ $customer->id }}" 
-                            data-customer-name="{{ $customer->name }}">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 5%">ID</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 25%">Email</th>
+                    <th style="width: 20%">Phone</th>
+                    <th style="width: 25%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($customers as $customer)
+                <tr>
+                    <td>{{ $customer->id }}</td>
+                    <td class="text-nowrap">{{ $customer->name }}</td>
+                    <td class="text-nowrap">{{ $customer->email }}</td>
+                    <td class="text-nowrap">{{ $customer->phone }}</td>
+                    <td class="text-nowrap">
+                        <a href="{{ route('customer.show', ['id' => $customer->id]) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ route('customer.edit', ['id' => $customer->id]) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteConfirmModal" 
+                                data-customer-id="{{ $customer->id }}" 
+                                data-customer-name="{{ $customer->name }}">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{{ route('customer.create') }}" class="btn btn-primary">Create New Customer</a>
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
