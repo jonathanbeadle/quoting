@@ -62,18 +62,38 @@ class QuoteController extends Controller
     {
         $quote = Quote::findOrFail($id);
         $customer = $quote->customer;
-        // Use the unique token in the URL instead of the quote ID
+        
+        // Check if the customer has a valid email address
+        if (empty($customer->email)) {
+            return redirect()->route('quote.review', ['id' => $quote->id])
+                ->with('error', 'Customer does not have a valid email address.');
+        }
+        
+        // Generate the quote URL with the unique token
         $quoteUrl = route('quote.view', ['token' => $quote->token]);
 
-        Mail::raw("Dear {$customer->name},\n\nPlease view your quote here: $quoteUrl\n\nThank you.", function ($message) use ($customer) {
-            $message->to($customer->email)
-                    ->subject('Your Vehicle Quote');
-        });
+        try {
+            // Send HTML email with the blade template
+            Mail::send('emails.quote', [
+                'quote' => $quote, 
+                'customer' => $customer, 
+                'quoteUrl' => $quoteUrl
+            ], function ($message) use ($customer, $quote) {
+                $message->to($customer->email)
+                        ->subject('Your Vehicle Quote: ' . $quote->vehicle->make . ' ' . $quote->vehicle->model);
+            });
+            
+            // Update the quote status to indicate it was sent
+            $quote->sent = true;
+            $quote->save();
 
-        $quote->sent = true;
-        $quote->save();
-
-        return redirect()->route('quote.review', ['id' => $quote->id])->with('success', 'Quote sent successfully!');
+            return redirect()->route('quote.review', ['id' => $quote->id])
+                ->with('success', 'Quote successfully emailed to ' . $customer->email);
+                
+        } catch (\Exception $e) {
+            return redirect()->route('quote.review', ['id' => $quote->id])
+                ->with('error', 'Failed to send email: ' . $e->getMessage());
+        }
     }
 
     /**
