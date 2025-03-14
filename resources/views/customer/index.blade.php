@@ -2,10 +2,23 @@
 
 @section('content')
 <div class="container">
-    <h1>All Customers</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>All Customers</h1>
+        <div class="d-flex align-items-center">
+            {{ $customers->links() }}
+            <form action="{{ route('customer.index') }}" method="GET" class="d-flex ms-3">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ request('search') }}">
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
     
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     
     <table class="table table-bordered">

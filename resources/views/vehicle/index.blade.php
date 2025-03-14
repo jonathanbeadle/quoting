@@ -2,7 +2,21 @@
 
 @section('content')
 <div class="container">
-    <h1>All Vehicles</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>All Vehicles</h1>
+        <div class="d-flex align-items-center">
+            {{ $vehicles->links() }}
+            <form action="{{ route('vehicle.index') }}" method="GET" class="d-flex ms-3">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ request('search') }}">
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -34,5 +48,10 @@
             @endforeach
         </tbody>
     </table>
+    
+    <!-- Pagination Links -->
+    <div class="d-flex justify-content-center mt-3">
+        {{ $vehicles->links() }}
+    </div>
 </div>
 @endsection

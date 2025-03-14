@@ -95,11 +95,29 @@ class QuoteController extends Controller
     }
 
     /**
-     * List all quotes.
+     * List all quotes with pagination.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $quotes = Quote::with(['customer', 'vehicle'])->get();
+        $query = Quote::with(['customer', 'vehicle']);
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->whereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('vehicle', function($q) use ($search) {
+                    $q->where('make', 'like', '%' . $search . '%')
+                      ->orWhere('model', 'like', '%' . $search . '%');
+                })
+                ->orWhere('finance_type', 'like', '%' . $search . '%')
+                ->orWhere('status', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $quotes = $query->paginate(10)->withQueryString();
         return view('quote.index', compact('quotes'));
     }
 

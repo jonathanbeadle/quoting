@@ -127,10 +127,34 @@ class OrderController extends Controller
                          ->with('success', 'Order confirmed successfully.');
     }
 
-    public function index()
-{
-    $orders = Order::with(['customer', 'vehicle', 'quote'])->get();
-    return view('order.index', compact('orders'));
-}
+    /**
+     * List all orders with pagination.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
+    public function index(Request $request)
+    {
+        $query = Order::with(['customer', 'vehicle', 'quote']);
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->whereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('vehicle', function($q) use ($search) {
+                    $q->where('make', 'like', '%' . $search . '%')
+                      ->orWhere('model', 'like', '%' . $search . '%');
+                })
+                ->orWhere('finance_type', 'like', '%' . $search . '%')
+                ->orWhere('status', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $orders = $query->paginate(10)->withQueryString();
+        return view('order.index', compact('orders'));
+    }
 
 }
