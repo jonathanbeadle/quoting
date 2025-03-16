@@ -385,6 +385,12 @@
                 deleteForm.action = '/vehicle/' + vehicleId;
             });
         }
+        
+        // Auto-activate edit mode if edit parameter is present in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            toggleEditMode();
+        }
     });
 </script>
 @endsection

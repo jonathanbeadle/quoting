@@ -43,7 +43,7 @@
                     <td class="text-nowrap">{{ $customer->phone }}</td>
                     <td class="text-nowrap">
                         <a href="{{ route('customer.show', ['id' => $customer->id]) }}" class="btn btn-sm btn-info">View</a>
-                        <a href="{{ route('customer.edit', ['id' => $customer->id]) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ route('customer.show', ['id' => $customer->id, 'edit' => 'true']) }}" class="btn btn-sm btn-warning">Edit</a>
                         <button class="btn btn-sm btn-danger" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#deleteConfirmModal" 
