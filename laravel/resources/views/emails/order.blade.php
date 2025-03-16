@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Vehicle Quote from Fleethub</title>
+    <title>Your Vehicle Order from Fleethub</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,6 +35,8 @@
         .content {
             padding: 20px;
             border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
             background-color: #f9f9f9;
         }
         .button {
@@ -78,31 +80,33 @@
                 <div class="wrapper">
                     <div class="header">
                         <img src="{{ config('app.url') }}/images/logo.png" alt="Fleethub Logo" class="logo">
-                        <h1>Your Vehicle Quote</h1>
+                        <h1>Your Vehicle Order</h1>
                     </div>
                     
                     <div class="container">
                         <div class="content">
                             <p>Dear {{ $customer->name }},</p>
                             
-                            <p>Thank you for your interest in leasing a vehicle through Fleethub.</p>
+                            <p>Thank you for placing your order with Fleethub.</p>
                             
                             <div class="vehicle-info">
-                                <h3>{{ $quote->vehicle->make }} {{ $quote->vehicle->model }}</h3>
-                                <p><strong>Specification:</strong> {{ $quote->vehicle->specification }}</p>
-                                <p><strong>Finance Type:</strong> {{ $quote->finance_type }}</p>
-                                <p><strong>Monthly Payment:</strong> £{{ number_format($quote->monthly_payment, 2) }}</p>
+                                <h3>{{ $order->vehicle->make }} {{ $order->vehicle->model }}</h3>
+                                <p><strong>Specification:</strong> {{ $order->vehicle->specification }}</p>
+                                <p><strong>Finance Type:</strong> {{ $order->finance_type }}</p>
+                                <p><strong>Contract Length:</strong> {{ $order->contract_length }} months</p>
+                                <p><strong>Annual Mileage:</strong> {{ number_format($order->annual_mileage) }} miles</p>
+                                <p><strong>Monthly Payment:</strong> £{{ number_format($order->monthly_payment, 2) }}</p>
                             </div>
                             
-                            <p>We are pleased to provide you with a detailed quote for this vehicle. You can view all the details by clicking the button below:</p>
+                            <p>You can view your complete order details and next steps by clicking the button below:</p>
                             
                             <p style="text-align: center;">
-                                <a href="{{ $quoteUrl }}" class="button">View Your Quote</a>
+                                <a href="{{ $orderUrl }}" class="button">View Your Order</a>
                             </p>
                             
-                            <p>This quote is valid for 28 days from {{ $quote->created_at->format('d/m/Y') }} and is subject to vehicle availability and credit approval.</p>
+                            <p>This order is valid for 28 days from {{ $order->created_at->format('d/m/Y') }} and is subject to vehicle availability and credit approval.</p>
                             
-                            <p>If you have any questions about this quote or would like to proceed with an order, please don't hesitate to contact us.</p>
+                            <p>A member of our team will be in touch shortly to guide you through the next steps. If you have any questions in the meantime, please don't hesitate to contact us.</p>
                             
                             <p>Best regards,<br>
                             The Fleethub Team<br>

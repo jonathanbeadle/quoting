@@ -1,4 +1,6 @@
-@extends('layouts.public')
+@extends('layouts.app')
+
+@section('title', 'Quote Expired')
 
 @section('content')
 <div class="container my-4" style="max-width:1000px;">

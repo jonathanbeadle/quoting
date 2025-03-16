@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Customer: ' . $customer->name)
+
 @section('content')
 <div class="container">
     <h1>Edit Customer</h1>

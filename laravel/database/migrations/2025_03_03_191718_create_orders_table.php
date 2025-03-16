@@ -33,12 +33,15 @@ return new class extends Migration {
             $table->string('payment_profile');
             $table->decimal('deposit', 8, 2);
             $table->decimal('monthly_payment', 8, 2);
-            $table->boolean('maintenance');
+            $table->boolean('maintenance')->default(false);
             $table->decimal('document_fee', 8, 2);
 
             // Order status: initially set to 'pending'
             // You can allow values like 'pending', 'approved', 'cancelled', etc.
             $table->enum('status', ['pending', 'active', 'expired', 'confirmed'])->default('pending');
+            $table->string('token')->unique();
+            $table->boolean('sent')->default(false);
+            $table->timestamp('expires_at')->nullable();
 
             $table->timestamps();
         });

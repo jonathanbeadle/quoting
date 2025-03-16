@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Edit ' . $vehicle->make . ' ' . $vehicle->model)
+
 @section('content')
 <div class="container">
     <h1>Edit Vehicle</h1>

@@ -1,5 +1,7 @@
 @extends('layouts.public')
 
+@section('title', 'Quote: ' . $quote->vehicle->make . ' ' . $quote->vehicle->model)
+
 @section('content')
 @php
     // Set dynamic Key Information based on the quote's finance type
@@ -28,6 +30,25 @@
 @endphp
 
 <div class="container my-4" style="max-width:1000px;">
+  <!-- Success/Error Messages -->
+  @if($quote->status == 'confirmed')
+    <div class="alert alert-success text-center">
+      <strong>Order Confirmed!</strong> Thank you for confirming your order for the {{ $quote->vehicle->make }} {{ $quote->vehicle->model }}. Our team have been notified and will be in touch shortly.
+        </div>
+  @elseif(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  
+  @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+      {{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+
   <!-- Header Section with 33.33% / 66.66% split -->
   <div class="row mb-4 align-items-center">
     <!-- Left Column: Logo (33.33%) -->
@@ -184,11 +205,17 @@
           <p>
             Thank you for allowing Fleethub to quote on your <strong>{{ $quote->vehicle->make }} {{ $quote->vehicle->model }}</strong>.
           </p>
+          @if($quote->status == 'confirmed')
+          <p>
+            <strong class="text-success">Your order has been confirmed.</strong> A member of our team will be in touch shortly to process your order and guide you through the next steps.
+          </p>
+          @else
           <p>This link and quotation will expire in 28 days. Please note, prices may change at any time and are subject to availability.
           </p>
           <p>
             If you would like to order this vehicle, please read and review the information below. Once satisfied you can proceed by clicking the <b>Confirm Order</b> button at the bottom of this page.
           </p>
+          @endif
           <p>
             To explain the next stages of the process, you can view our How Leasing Works page.
           </p>

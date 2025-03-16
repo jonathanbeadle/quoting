@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Create New Quote')
+
 @section('content')
 <div class="container">
     <div id="alertContainer"></div>

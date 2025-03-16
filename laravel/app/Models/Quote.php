@@ -45,6 +45,11 @@ class Quote extends Model
         return $this->belongsTo(\App\Models\Vehicle::class);
     }
 
+    public function tracking()
+    {
+        return $this->hasMany(QuoteTracking::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

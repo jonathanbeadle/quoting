@@ -20,4 +20,9 @@ class Customer extends Model
     {
         return $this->hasMany(\App\Models\Quote::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class);
+    }
 }

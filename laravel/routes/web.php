@@ -42,7 +42,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/quote', [QuoteController::class, 'store'])->name('quote.store');
     Route::get('/quote/review/{id}', [QuoteController::class, 'review'])->name('quote.review');
     Route::post('/quote/send/{id}', [QuoteController::class, 'send'])->name('quote.send');
-    Route::get('/quote/confirm/{id}', [QuoteController::class, 'confirm'])->name('quote.confirm');
     Route::post('/quote/status/{id}', [QuoteController::class, 'updateStatus'])->name('quote.updateStatus');
     Route::get('/quotes', [QuoteController::class, 'index'])->name('quote.index');
 
@@ -51,8 +50,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('order.index');
     Route::get('/order/{id}', [OrderController::class, 'view'])->name('order.view');
     Route::get('/order/{id}/edit', [OrderController::class, 'edit'])->name('order.edit');
+    Route::post('/order/{id}/send', [OrderController::class, 'send'])->name('order.send');
+    Route::get('/order/view/{token}', [OrderController::class, 'viewByToken'])->name('order.viewByToken');
     Route::put('/order/{id}', [OrderController::class, 'update'])->name('order.update');
     Route::post('/order/{id}/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
+    Route::get('/order/review/{id}', [OrderController::class, 'review'])->name('order.review');
+    Route::post('/order/status/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
 
     // Customer routes
     Route::get('/customer/create', [CustomerController::class, 'create'])->name('customer.create');
@@ -70,11 +73,43 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/vehicle/{id}', [VehicleController::class, 'show'])->name('vehicle.show');
     Route::get('/vehicle/{id}/edit', [VehicleController::class, 'edit'])->name('vehicle.edit');
     Route::put('/vehicle/{id}', [VehicleController::class, 'update'])->name('vehicle.update');
+    Route::delete('/vehicle/{id}', [VehicleController::class, 'destroy'])->name('vehicle.destroy');
 });
 
 // Public quote view route (accessible without auth)
 Route::get('/quote/view/{token}', [QuoteController::class, 'view'])->name('quote.view');
+Route::get('/quote/confirm/{id}', [QuoteController::class, 'confirm'])->name('quote.confirm');
 Route::get('/order/token/{token}', [OrderController::class, 'viewByToken'])->name('order.viewByToken');
+Route::get('/order/confirm/{id}', [OrderController::class, 'confirm'])->name('order.confirm');
+
+// Email preview routes - FOR DEVELOPMENT ONLY
+if (app()->environment('local')) {
+    Route::get('/email/preview/quote', function () {
+        // Create sample data that matches what your real email would receive
+        $customer = new App\Models\Customer();
+        $customer->name = "Sample Customer";
+        
+        $vehicle = new App\Models\Vehicle();
+        $vehicle->make = "Sample Make";
+        $vehicle->model = "Sample Model";
+        $vehicle->specification = "Sample Specification";
+        
+        $quote = new App\Models\Quote();
+        $quote->vehicle = $vehicle;
+        $quote->finance_type = "Business Contract Hire";
+        $quote->monthly_payment = 299.99;
+        $quote->created_at = now();
+        
+        $quoteUrl = "https://example.com/quote/123";
+        
+        // Return the email template with sample data
+        return view('emails.quote', [
+            'customer' => $customer,
+            'quote' => $quote,
+            'quoteUrl' => $quoteUrl
+        ]);
+    });
+}
 
 // Authentication routes
 require __DIR__.'/auth.php';
