@@ -50,6 +50,11 @@ class Quote extends Model
         return $this->hasMany(QuoteTracking::class);
     }
 
+    public function order()
+    {
+        return $this->hasOne(Order::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
