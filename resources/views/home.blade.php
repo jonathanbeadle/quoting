@@ -4,7 +4,54 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Dashboard</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Dashboard</h1>
+        <form action="{{ route('dashboard') }}" method="GET" class="d-flex ms-3">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-sm btn-primary">Search</button>
+        </form>
+    </div>
+    
+    @if(isset($searchResults) && $searchResults !== null)
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h2 class="mb-0 h5">Search Results</h2>
+            </div>
+            <div class="card-body">
+                @if($searchResults->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Business Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($searchResults as $customer)
+                                    <tr>
+                                        <td>{{ $customer->name }}</td>
+                                        <td>{{ $customer->business_name }}</td>
+                                        <td>{{ $customer->email }}</td>
+                                        <td>{{ $customer->phone }}</td>
+                                        <td>
+                                            <a href="{{ route('customer.show', ['id' => $customer->id]) }}" class="btn btn-sm btn-info">View</a>
+                                            <a href="{{ route('quote.create') }}?customer_id={{ $customer->id }}" class="btn btn-sm btn-primary">New Quote</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p class="text-muted">No customers found matching your search criteria.</p>
+                @endif
+            </div>
+        </div>
+    @endif
     
     <!-- Summary Cards - First Row -->
     <div class="row mb-4">

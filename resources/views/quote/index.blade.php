@@ -53,7 +53,7 @@
                     <td>
                         <form method="POST" action="{{ route('quote.updateStatus', $quote->id) }}" class="d-flex align-items-center gap-2">
                             @csrf
-                            <select name="status" class="form-select form-select-sm" style="width: auto;">
+                            <select name="status" class="form-select form-select-sm" style="width: 120px;">
                                 @if($quote->status === 'active')
                                     <option value="active" selected>Active</option>
                                     <option value="expired">Expire</option>
