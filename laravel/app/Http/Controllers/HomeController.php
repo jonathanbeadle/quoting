@@ -16,8 +16,20 @@ class HomeController extends Controller
         $this->middleware('auth')->except(['index']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        // Search functionality
+        $searchResults = null;
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $searchResults = Customer::where('name', 'like', '%' . $searchTerm . '%')
+                ->orWhere('business_name', 'like', '%' . $searchTerm . '%')
+                ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                ->orWhere('phone', 'like', '%' . $searchTerm . '%')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        
         // Summary counts
         $totalQuotes    = Quote::count();
         $sentQuotes     = Quote::where('sent', true)->count();
@@ -50,7 +62,8 @@ class HomeController extends Controller
             'recentCustomers',
             'recentVehicles',
             'recentOrders',
-            'customerInteractions'
+            'customerInteractions',
+            'searchResults'
         ));
     }
 }

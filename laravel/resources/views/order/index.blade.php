@@ -58,7 +58,7 @@
                     <td>
                         <form method="POST" action="{{ route('order.updateStatus', $order->id) }}" class="d-flex align-items-center gap-2">
                             @csrf
-                            <select name="status" class="form-select form-select-sm" style="width: auto;">
+                            <select name="status" class="form-select form-select-sm" style="width: 120px;">
                                 <option value="{{ $order->status }}" selected>{{ ucfirst($order->status) }}</option>
                                 
                                 @if($order->status === 'pending')
