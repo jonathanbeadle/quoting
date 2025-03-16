@@ -315,6 +315,12 @@
                 deleteForm.action = '/customer/' + customerId;
             });
         }
+        
+        // Auto-activate edit mode if edit parameter is present in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            toggleEditMode();
+        }
     });
 
     // Original values for cancel functionality

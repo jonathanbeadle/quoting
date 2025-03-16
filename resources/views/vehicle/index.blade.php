@@ -45,7 +45,7 @@
                     <td class="text-nowrap">{{ $vehicle->colour }}</td>
                     <td class="text-nowrap">
                         <a href="{{ route('vehicle.show', ['id' => $vehicle->id]) }}" class="btn btn-sm btn-info">View</a>
-                        <a href="{{ route('vehicle.edit', ['id' => $vehicle->id]) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ route('vehicle.show', ['id' => $vehicle->id, 'edit' => 'true']) }}" class="btn btn-sm btn-warning">Edit</a>
                     </td>
                 </tr>
                 @endforeach
