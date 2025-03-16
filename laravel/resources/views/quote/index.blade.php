@@ -78,7 +78,11 @@
                     </td>
                     <td class="text-center">
                         @if($quote->status === 'confirmed')
-                            <a href="{{ route('order.createFromQuote', ['quoteId' => $quote->id]) }}" class="btn btn-sm btn-secondary">Create Order</a>
+                            @if($quote->order)
+                                <a href="{{ route('order.review', ['id' => $quote->order->id]) }}" class="btn btn-sm btn-secondary">View</a>
+                            @else
+                                <a href="{{ route('order.createFromQuote', ['quoteId' => $quote->id]) }}" class="btn btn-sm btn-secondary">Create</a>
+                            @endif
                         @endif
                     </td>
                 </tr>
