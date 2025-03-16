@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class QuoteController extends Controller
 {
@@ -62,11 +63,10 @@ class QuoteController extends Controller
     {
         $quote = Quote::findOrFail($id);
         $customer = $quote->customer;
-        
+
         // Check if the customer has a valid email address
         if (empty($customer->email)) {
-            return redirect()->route('quote.review', ['id' => $quote->id])
-                ->with('error', 'Customer does not have a valid email address.');
+            return redirect()->back()->with('error', 'Customer does not have a valid email address.');
         }
         
         // Generate the quote URL with the unique token
@@ -83,16 +83,22 @@ class QuoteController extends Controller
                         ->subject('Your Vehicle Quote: ' . $quote->vehicle->make . ' ' . $quote->vehicle->model);
             });
             
+            // Track the email send
+            $quote->tracking()->create([
+                'event_type' => $quote->sent ? 'resent' : 'sent',
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'user_id' => auth()->id()
+            ]);
+            
             // Update the quote status to indicate it was sent
             $quote->sent = true;
             $quote->save();
 
-            return redirect()->route('quote.review', ['id' => $quote->id])
-                ->with('success', 'Quote successfully emailed to ' . $customer->email);
+            return redirect()->back()->with('success', 'Quote successfully emailed to ' . $customer->email);
                 
         } catch (\Exception $e) {
-            return redirect()->route('quote.review', ['id' => $quote->id])
-                ->with('error', 'Failed to send email: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
     }
 
@@ -102,6 +108,33 @@ class QuoteController extends Controller
     public function view($token)
     {
         $quote = Quote::where('token', $token)->firstOrFail();
+
+        // Get the latest tracking record for this quote
+        $latestTracking = $quote->tracking()
+            ->whereNull('user_id') // Only consider customer interactions
+            ->latest()
+            ->first();
+
+        // Determine if we should create a new tracking record
+        $shouldTrack = true;
+        
+        if ($latestTracking) {
+            // If the last interaction was less than 60 minutes ago and of the same type
+            if ($latestTracking->event_type === 'view' && 
+                $latestTracking->created_at->diffInMinutes(now()) < 60) {
+                $shouldTrack = false;
+            }
+        }
+
+        // Only create tracking record if conditions are met
+        if ($shouldTrack) {
+            $quote->tracking()->create([
+                'event_type' => 'view',
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'user_id' => auth()->id()
+            ]);
+        }
 
         // Check if the quote has expired
         if ($quote->status === 'expired' || now()->greaterThan($quote->expires_at)) {
@@ -119,7 +152,7 @@ class QuoteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Quote::with(['customer', 'vehicle']);
+        $query = Quote::with(['customer', 'vehicle'])->orderBy('id', 'desc');
 
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -147,11 +180,30 @@ class QuoteController extends Controller
     public function confirm($id)
     {
         $quote = Quote::findOrFail($id);
+        
+        // Store the token before updating status (in case we need to redirect back)
+        $token = $quote->token;
+        
+        // Track the confirmation
+        $quote->tracking()->create([
+            'event_type' => 'confirm',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'user_id' => auth()->id()
+        ]);
+        
         // Update the quote status to 'confirmed'
         $quote->status = 'confirmed';
         $quote->save();
 
-        return redirect()->route('quote.index')->with('success', 'Quote confirmed and order processed!');
+        // Check if the user is logged in
+        if (Auth::check()) {
+            // If logged in, redirect to quote index page
+            return redirect()->route('quote.index')->with('success', 'Quote confirmed and order processed!');
+        } else {
+            // If not logged in, redirect back to the quote view page
+            return redirect()->route('quote.view', ['token' => $token]);
+        }
     }
 
     /**

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard')
+
 @section('content')
 <div class="container">
     <h1 class="mb-4">Dashboard</h1>
@@ -67,6 +69,54 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalVehicles }}</h5>
                     <a href="{{ route('vehicle.index') }}" class="btn btn-light btn-sm">View Vehicles</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Interactions Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="mb-0 h5">Latest Customer Interactions</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Customer</th>
+                                <th>Vehicle</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($customerInteractions as $interaction)
+                                <tr>
+                                    <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $interaction->quote->customer->name }}</td>
+                                    <td>{{ $interaction->quote->vehicle->make }} {{ $interaction->quote->vehicle->model }}</td>
+                                    <td>
+                                        @switch($interaction->event_type)
+                                            @case('view')
+                                                <span class="badge bg-info">Viewed Quote</span>
+                                                @break
+                                            @case('confirm')
+                                                <span class="badge bg-success">Confirmed Order</span>
+                                                @break
+                                            @default
+                                                <span class="badge bg-secondary">{{ ucfirst($interaction->event_type) }}</span>
+                                        @endswitch
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No customer interactions found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ use App\Models\Quote;
 use App\Models\Customer;
 use App\Models\Vehicle;
 use App\Models\Order;
+use App\Models\QuoteTracking;
 
 class HomeController extends Controller
 {
@@ -31,6 +32,13 @@ class HomeController extends Controller
         $recentVehicles  = Vehicle::orderBy('created_at', 'desc')->take(5)->get();
         $recentOrders    = Order::with(['customer', 'vehicle', 'quote'])->orderBy('created_at', 'desc')->take(5)->get();
         
+        // Get latest customer interactions (where user_id is null)
+        $customerInteractions = QuoteTracking::whereNull('user_id')
+            ->with(['quote.customer', 'quote.vehicle'])
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+        
         return view('home', compact(
             'totalQuotes',
             'sentQuotes',
@@ -41,7 +49,8 @@ class HomeController extends Controller
             'recentQuotes',
             'recentCustomers',
             'recentVehicles',
-            'recentOrders'
+            'recentOrders',
+            'customerInteractions'
         ));
     }
 }

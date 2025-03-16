@@ -84,7 +84,9 @@ class VehicleController extends Controller
      */
     public function show($id)
     {
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle = Vehicle::with(['quotes' => function($query) {
+            $query->orderBy('created_at', 'desc');
+        }, 'quotes.customer'])->findOrFail($id);
         return view('vehicle.show', compact('vehicle'));
     }
     
@@ -105,24 +107,67 @@ class VehicleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $vehicle = Vehicle::findOrFail($id);
-        $data = $request->validate([
-            'make'                => 'required|string|max:255',
-            'model'               => 'required|string|max:255',
-            'specification'       => 'required|string',
-            'transmission'        => 'required|in:Manual,Automatic',
-            'fuel_type'           => 'required|in:Diesel,Petrol,Hybrid,Electric',
-            'registration_status' => 'required|in:New,Pre-Registered,Used',
-            'registration_date'   => 'nullable|date',
-            'additional_options'  => 'nullable|string',
-            'dealer_fit_options'  => 'nullable|string',
-            'colour'              => 'required|string|max:255',
-        ]);
-        $vehicle->update($data);
-        return redirect()->route('vehicle.show', ['id' => $vehicle->id])->with('success', 'Vehicle updated successfully!');
+        
+        try {
+            $data = $request->validate([
+                'make'                => 'required|string|max:255',
+                'model'               => 'required|string|max:255',
+                'specification'       => 'required|string',
+                'transmission'        => 'required|in:Manual,Automatic',
+                'fuel_type'           => 'required|in:Diesel,Petrol,Hybrid,Electric',
+                'registration_status' => 'required|in:New,Pre-Registered,Used',
+                'registration_date'   => 'nullable|date',
+                'additional_options'  => 'nullable|string',
+                'dealer_fit_options'  => 'nullable|string',
+                'colour'              => 'required|string|max:255'
+            ]);
+
+            $vehicle->update($data);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Vehicle updated successfully!',
+                    'vehicle' => $vehicle
+                ]);
+            }
+
+            return redirect()->route('vehicle.show', ['id' => $vehicle->id])
+                           ->with('success', 'Vehicle updated successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a vehicle.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+        $vehicleName = $vehicle->make . ' ' . $vehicle->model;
+        
+        // Check if vehicle has associated quotes
+        if ($vehicle->quotes()->count() > 0) {
+            return redirect()->back()->with('error', 'Cannot delete vehicle with associated quotes.');
+        }
+        
+        $vehicle->delete();
+        return redirect()->route('vehicle.index')->with('success', "Vehicle '{$vehicleName}' deleted successfully!");
     }
 }

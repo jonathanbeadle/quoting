@@ -45,73 +45,65 @@
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Finance Type</label>
                         <div class="col-8">
-                            <select name="finance_type" class="form-select form-select-sm" required>
-                                @foreach(['Hire Purchase', 'Finance Lease', 'Operating Lease', 'Business Contract Hire'] as $type)
-                                    <option value="{{ $type }}" {{ $order->finance_type == $type ? 'selected' : '' }}>{{ $type }}</option>
-                                @endforeach
-                            </select>
+                            <div class="form-control form-control-sm bg-light">{{ $order->finance_type }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Contract Length</label>
                         <div class="col-8">
-                            <div class="input-group input-group-sm">
-                                <input type="number" name="contract_length" class="form-control form-control-sm" value="{{ $order->contract_length }}" required>
-                                <span class="input-group-text">months</span>
-                            </div>
+                            <div class="form-control form-control-sm bg-light">{{ $order->contract_length }} months</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Annual Mileage</label>
                         <div class="col-8">
-                            <input type="number" name="annual_mileage" class="form-control form-control-sm" value="{{ $order->annual_mileage }}" required>
+                            <div class="form-control form-control-sm bg-light">{{ $order->annual_mileage }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Payment Profile</label>
                         <div class="col-8">
-                            <input type="text" name="payment_profile" class="form-control form-control-sm" value="{{ $order->payment_profile }}" required>
+                            <div class="form-control form-control-sm bg-light">{{ $order->payment_profile }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Deposit</label>
                         <div class="col-8">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">£</span>
-                                <input type="number" step="0.01" name="deposit" class="form-control form-control-sm" value="{{ $order->deposit }}" required>
-                            </div>
+                            <div class="form-control form-control-sm bg-light">£{{ number_format($order->deposit, 2) }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Monthly Payment</label>
                         <div class="col-8">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">£</span>
-                                <input type="number" step="0.01" name="monthly_payment" class="form-control form-control-sm" value="{{ $order->monthly_payment }}" required>
-                            </div>
+                            <div class="form-control form-control-sm bg-light">£{{ number_format($order->monthly_payment, 2) }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Document Fee</label>
                         <div class="col-8">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">£</span>
-                                <input type="number" step="0.01" name="document_fee" class="form-control form-control-sm" value="{{ $order->document_fee }}" required>
-                            </div>
+                            <div class="form-control form-control-sm bg-light">£{{ number_format($order->document_fee, 2) }}</div>
                         </div>
                     </div>
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Maintenance</label>
                         <div class="col-8">
-                            <div class="form-check form-switch mt-1">
-                                <input class="form-check-input" type="checkbox" name="maintenance" value="1" {{ $order->maintenance ? 'checked' : '' }}>
-                                <label class="form-check-label small">Include Maintenance</label>
+                            <div class="form-control form-control-sm bg-light">{{ $order->maintenance ? 'Yes' : 'No' }}</div>
+                        </div>
+                    </div>
+                    <div class="row py-1">
+                        <label class="col-4 col-form-label col-form-label-sm fw-bold">Status</label>
+                        <div class="col-8">
+                            <div class="form-control form-control-sm bg-light d-flex justify-content-between align-items-center">
+                                {{ ucfirst($order->status) }}
+                                <span class="badge bg-{{ $order->status == 'active' ? 'primary' : ($order->status == 'expired' ? 'danger' : ($order->status == 'confirmed' ? 'success' : 'warning')) }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="card mb-4">
                 <div class="card-header bg-dark text-white">
                     <h5 class="mb-0">Customer Details</h5>
@@ -197,6 +189,14 @@
                             <div class="form-control form-control-sm bg-light" style="height: auto; min-height: calc(1.5em + 0.5rem + 2px);">{{ $order->vehicle->dealer_fit_options }}</div>
                         </div>
                     </div>
+                    @if($order->vehicle->registration_status == 'Pre-Registered')
+                    <div class="row py-1">
+                        <label class="col-4 col-form-label col-form-label-sm fw-bold">Reg. Date</label>
+                        <div class="col-8">
+                            <div class="form-control form-control-sm bg-light">{{ $order->vehicle->registration_date }}</div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="row py-1">
                         <label class="col-4 col-form-label col-form-label-sm fw-bold">Colour</label>
                         <div class="col-8">
@@ -225,8 +225,6 @@
                     <div class="row py-1">
                         <div class="col-12">
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
-                                
                                 <form action="{{ route('order.send', ['id' => $order->id]) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-success" {{ empty($order->customer->email) ? 'disabled' : '' }}>
@@ -252,13 +250,14 @@
                 </div>
             @endif
 
-            @if($order->sent)
-                @php
-                    $lastEmailSent = $order->tracking()
-                        ->whereIn('event_type', ['sent', 'resent'])
-                        ->orderBy('created_at', 'desc')
-                        ->first();
-                @endphp
+            @php
+                $lastEmailSent = $order->tracking()
+                    ->whereIn('event_type', ['sent', 'resent'])
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+            @endphp
+            
+            @if($lastEmailSent)
                 <div class="alert alert-info mt-2 mb-0">
                     <strong>Note:</strong> This order was last sent to {{ $order->customer->email }} on {{ $lastEmailSent->created_at->format('d/m/Y') }} at {{ $lastEmailSent->created_at->format('H:i') }}.
                 </div>

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'All Quotes')
+
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -12,14 +14,6 @@
             </form>
         </div>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">

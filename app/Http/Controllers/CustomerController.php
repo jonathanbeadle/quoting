@@ -75,8 +75,25 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = Customer::findOrFail($id);
-        return view('customer.show', compact('customer'));
+        $customer = Customer::with([
+            'quotes.tracking' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'quotes.vehicle',
+            'orders.vehicle',
+            'orders' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($id);
+
+        // Get recent interactions from quotes
+        $recentInteractions = collect();
+        foreach($customer->quotes as $quote) {
+            $recentInteractions = $recentInteractions->concat($quote->tracking);
+        }
+        $recentInteractions = $recentInteractions->sortByDesc('created_at')->take(10);
+
+        return view('customer.show', compact('customer', 'recentInteractions'));
     }
     
     /**
@@ -96,19 +113,42 @@ class CustomerController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $customer = Customer::findOrFail($id);
-        $data = $request->validate([
-            'name'          => 'required|string|max:255',
-            'business_name' => 'required|string|max:255',
-            'email'         => 'required|email|unique:customers,email,' . $customer->id,
-            'phone'         => 'required|string'
-        ]);
-        $customer->update($data);
-        return redirect()->route('customer.show', ['id' => $customer->id])->with('success', 'Customer updated successfully!');
+        
+        try {
+            $data = $request->validate([
+                'name'          => 'required|string|max:255',
+                'business_name' => 'required|string|max:255',
+                'email'         => 'required|email|unique:customers,email,' . $customer->id,
+                'phone'         => 'required|string'
+            ]);
+
+            $customer->update($data);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Customer updated successfully!',
+                    'customer' => $customer
+                ]);
+            }
+
+            return redirect()->route('customer.show', ['id' => $customer->id])
+                           ->with('success', 'Customer updated successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            
+            throw $e;
+        }
     }
 
     /**
