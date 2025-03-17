@@ -56,6 +56,11 @@
                             <i class="bi bi-plus-circle"></i> Add New
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="addNewDropdown">
+                             <li>
+                                <a class="dropdown-item" href="{{ route('deal.create') }}">
+                                    <i class="bi bi-briefcase"></i> New Deal
+                                </a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('quote.create') }}">
                                     <i class="bi bi-file-text"></i> New Quote
@@ -69,11 +74,6 @@
                             <li>
                                 <a class="dropdown-item" href="{{ route('vehicle.create') }}">
                                     <i class="bi bi-truck"></i> New Vehicle
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('deal.create') }}">
-                                    <i class="bi bi-briefcase"></i> New Deal
                                 </a>
                             </li>
                         </ul>

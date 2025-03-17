@@ -6,20 +6,7 @@
 
 @section('content')
 <div class="container">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
+    <!-- Deal Information -->
     <div class="card mb-4">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Deal Information</h5>
@@ -28,104 +15,118 @@
                 <a href="{{ route('deal.edit', ['id' => $deal->id]) }}" class="btn btn-warning btn-sm">Edit Deal</a>
             </div>
         </div>
+        
         <div class="card-body">
-            <div class="row">
+            <div class="row g-2">
+                <!-- Deal Details -->
                 <div class="col-md-6">
                     <div class="card h-100">
                         <div class="card-header bg-light py-2">
                             <h6 class="mb-0">Deal Details</h6>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="fw-bold">Deal ID:</label>
-                                <p class="mb-0">{{ $deal->id }}</p>
+                        <div class="card-body p-1">
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Deal ID</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">{{ $deal->id }}</div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Title:</label>
-                                <p class="mb-0">{{ $deal->title ?? 'No title' }}</p>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Title</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">{{ $deal->title ?? 'No title' }}</div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Status:</label>
-                                <p class="mb-0">
-                                    <span class="badge bg-{{ $deal->status === Deal::STATUS_CLOSED ? 'secondary' : 'primary' }}">
-                                        {{ $deal->status }}
-                                    </span>
-                                </p>
-                                
-                                <!-- Status Update Form -->
-                                <form action="{{ route('deal.updateStatus', $deal->id) }}" method="POST" class="mt-2">
-                                    @csrf
-                                    <div class="input-group">
-                                        <select name="status" class="form-select form-select-sm">
-                                            @foreach(\App\Models\Deal::getStatuses() as $status)
-                                                @if($deal->canTransitionTo($status) || $status === $deal->status)
-                                                    <option value="{{ $status }}" {{ $deal->status === $status ? 'selected' : '' }}>
-                                                        {{ $status }}
-                                                    </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Status</label>
+                                <div class="col-8">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div id="statusDisplay" class="form-control form-control-sm bg-light">
+                                            {{ $deal->status }}
+                                        </div>
+                                        <button onclick="toggleStatusEdit()" class="btn btn-sm btn-warning" id="editStatusBtn">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div id="statusEdit" class="d-none w-100">
+                                            <form action="{{ route('deal.updateStatus', $deal->id) }}" method="POST" class="d-flex gap-2" id="statusForm">
+                                                @csrf
+                                                <select name="status" class="form-select form-select-sm">
+                                                    @foreach(\App\Models\Deal::getStatuses() as $status)
+                                                        @if($deal->canTransitionTo($status) || $status === $deal->status)
+                                                            <option value="{{ $status }}" {{ $deal->status === $status ? 'selected' : '' }}>
+                                                                {{ $status }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                                <button type="button" onclick="toggleStatusEdit()" class="btn btn-sm btn-secondary">Cancel</button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Created:</label>
-                                <p class="mb-0">{{ $deal->created_at->format('d/m/Y H:i') }}</p>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Created</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">{{ $deal->created_at->format('d/m/Y H:i') }}</div>
+                                </div>
                             </div>
+                            @if($deal->notes)
+                                <div class="row py-1">
+                                    <label class="col-4 col-form-label col-form-label-sm fw-bold">Notes</label>
+                                    <div class="col-8">
+                                        <div class="form-control form-control-sm bg-light" style="height: auto; min-height: calc(1.5em + 0.5rem + 2px);">{{ $deal->notes }}</div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
+                <!-- Customer Information -->
                 <div class="col-md-6">
                     <div class="card h-100">
                         <div class="card-header bg-light py-2">
                             <h6 class="mb-0">Customer Information</h6>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="fw-bold">Name:</label>
-                                <p class="mb-0">
-                                    <a href="{{ route('customer.show', ['id' => $deal->customer->id]) }}">
-                                        {{ $deal->customer->name }}
-                                    </a>
-                                </p>
+                        <div class="card-body p-1">
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Name</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">
+                                        <a href="{{ route('customer.show', ['id' => $deal->customer->id]) }}">
+                                            {{ $deal->customer->name }}
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Business Name:</label>
-                                <p class="mb-0">{{ $deal->customer->business_name }}</p>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Business</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">{{ $deal->customer->business_name }}</div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Email:</label>
-                                <p class="mb-0">
-                                    <a href="mailto:{{ $deal->customer->email }}">{{ $deal->customer->email }}</a>
-                                </p>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Email</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">
+                                        <a href="mailto:{{ $deal->customer->email }}">{{ $deal->customer->email }}</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="fw-bold">Phone:</label>
-                                <p class="mb-0">
-                                    <a href="tel:{{ $deal->customer->phone }}">{{ $deal->customer->phone }}</a>
-                                </p>
+                            <div class="row py-1">
+                                <label class="col-4 col-form-label col-form-label-sm fw-bold">Phone</label>
+                                <div class="col-8">
+                                    <div class="form-control form-control-sm bg-light">
+                                        <a href="tel:{{ $deal->customer->phone }}">{{ $deal->customer->phone }}</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            @if($deal->notes)
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-light py-2">
-                            <h6 class="mb-0">Notes</h6>
-                        </div>
-                        <div class="card-body">
-                            {{ $deal->notes }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
         </div>
     </div>
 
@@ -225,4 +226,25 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('scripts')
+<script>
+function toggleStatusEdit() {
+    const displayElement = document.getElementById('statusDisplay');
+    const editElement = document.getElementById('statusEdit');
+    const editBtn = document.getElementById('editStatusBtn');
+    
+    if (displayElement.classList.contains('d-none')) {
+        displayElement.classList.remove('d-none');
+        editElement.classList.add('d-none');
+        editBtn.classList.remove('d-none');
+    } else {
+        displayElement.classList.add('d-none');
+        editElement.classList.remove('d-none');
+        editBtn.classList.add('d-none');
+    }
+}
+</script>
 @endsection
