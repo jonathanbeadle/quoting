@@ -37,7 +37,7 @@
         <div class="card-body">
             <form id="customerForm" onsubmit="return false;">
                 @csrf
-                <div class="row">
+                <div class="row g-2">
                     <!-- Basic Information -->
                     <div class="col-md-6">
                         <div class="card h-100">
