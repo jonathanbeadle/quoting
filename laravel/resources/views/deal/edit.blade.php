@@ -41,13 +41,10 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status*</label>
                             <select name="status" id="status" class="form-select" required>
-                                <option value="{{ $deal->status }}" selected>{{ $deal->status }}</option>
                                 @foreach(\App\Models\Deal::getStatuses() as $status)
-                                    @if($deal->canTransitionTo($status))
-                                        <option value="{{ $status }}" {{ $deal->status === $status ? 'selected' : '' }}>
-                                            {{ $status }}
-                                        </option>
-                                    @endif
+                                    <option value="{{ $status }}" {{ $deal->status === $status ? 'selected' : '' }}>
+                                        {{ $status }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>

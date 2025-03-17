@@ -12,7 +12,8 @@ class Deal extends Model
     protected $fillable = [
         'customer_id',
         'title',
-        'status'
+        'status',
+        'notes'
     ];
 
     // Define status constants
@@ -40,9 +41,21 @@ class Deal extends Model
         ];
     }
 
-    // Check if status transition is valid
+    /**
+     * Check if status transition is valid for automatic transitions
+     * 
+     * Note: This is only used for automatic transitions triggered by system events.
+     * Manual transitions (via UI) can move to any status.
+     */
     public function canTransitionTo($newStatus)
     {
+        // Allow manual transitions to any valid status
+        // This enables free movement on the kanban board
+        if (request()->isMethod('post') || request()->ajax()) {
+            return in_array($newStatus, self::getStatuses());
+        }
+        
+        // For automatic transitions triggered by observers, use the flow rules
         $allowedTransitions = [
             self::STATUS_INITIAL => [self::STATUS_QUOTE_SENT, self::STATUS_CLOSED],
             self::STATUS_QUOTE_SENT => [self::STATUS_QUOTE_ACCEPTED, self::STATUS_INITIAL, self::STATUS_CLOSED],
@@ -66,18 +79,9 @@ class Deal extends Model
     {
         return $this->hasMany(Quote::class);
     }
-
+    
     public function orders()
     {
         return $this->hasMany(Order::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($deal) {
-            $deal->status = $deal->status ?? self::STATUS_INITIAL;
-        });
     }
 }
