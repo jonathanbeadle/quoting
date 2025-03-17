@@ -21,7 +21,6 @@
                                 <select name="customer_id" id="customerSelect" class="form-select" required>
                                     @foreach($customers as $customer)
                                         <option value="{{ $customer->id }}"
-
                                             @if(isset($selectedCustomer) && $selectedCustomer == $customer->id) selected @endif>
                                             {{ $customer->name }} ({{ $customer->email }})
                                         </option>
@@ -33,6 +32,23 @@
                             </div>
                         </div>
 
+                        <!-- Deal Selection -->
+                        <div class="mb-3">
+                            <label for="deal_id" class="form-label">Select Deal (Optional)</label>
+                            <div class="input-group">
+                                <select name="deal_id" id="dealSelect" class="form-select">
+                                    <option value="">No Deal</option>
+                                    @foreach($deals ?? [] as $deal)
+                                        <option value="{{ $deal->id }}"
+                                            @if(isset($selectedDeal) && $selectedDeal == $deal->id) selected @endif>
+                                            {{ $deal->title ?? 'Deal #' . $deal->id }} ({{ $deal->customer->name }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <a href="{{ route('deal.create') }}" class="btn btn-outline-secondary">New Deal</a>
+                            </div>
+                        </div>
+
                         <!-- Vehicle Selection with "Add Vehicle" Modal -->
                         <div class="mb-3">
                             <label for="vehicle_id" class="form-label">Select Vehicle*</label>
@@ -40,7 +56,6 @@
                                 <select name="vehicle_id" id="vehicleSelect" class="form-select" required>
                                     @foreach($vehicles as $vehicle)
                                         <option value="{{ $vehicle->id }}"
-
                                             @if(isset($selectedVehicle) && $selectedVehicle == $vehicle->id) selected @endif>
                                             {{ $vehicle->make }} {{ $vehicle->model }}
                                         </option>

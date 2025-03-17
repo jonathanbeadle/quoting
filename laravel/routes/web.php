@@ -6,6 +6,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\DealController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -78,6 +79,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/vehicle/{id}/edit', [VehicleController::class, 'edit'])->name('vehicle.edit');
     Route::put('/vehicle/{id}', [VehicleController::class, 'update'])->name('vehicle.update');
     Route::delete('/vehicle/{id}', [VehicleController::class, 'destroy'])->name('vehicle.destroy');
+
+    // Deal routes
+    Route::get('/deals', [DealController::class, 'index'])->name('deal.index');
+    Route::get('/deal/create', [DealController::class, 'create'])->name('deal.create');
+    Route::post('/deal', [DealController::class, 'store'])->name('deal.store');
+    Route::get('/deal/{id}', [DealController::class, 'show'])->name('deal.show');
+    Route::get('/deal/{id}/edit', [DealController::class, 'edit'])->name('deal.edit');
+    Route::put('/deal/{id}', [DealController::class, 'update'])->name('deal.update');
+    Route::post('/deal/{id}/status', [DealController::class, 'updateStatus'])->name('deal.updateStatus');
 });
 
 // Public quote view route (accessible without auth)

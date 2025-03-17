@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Quote;
 use App\Models\Customer;
 use App\Models\Vehicle;
+use App\Models\Deal;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,14 @@ class QuoteController extends Controller
         $vehicles  = Vehicle::all();
         $selectedCustomer = $request->query('customer_id', null);
         $selectedVehicle  = $request->query('vehicle_id', null);
-        return view('quote.create', compact('customers', 'vehicles', 'selectedCustomer', 'selectedVehicle'));
+        $selectedDeal = $request->query('deal_id', null);
+        
+        // Get open deals for the selected customer, or all open deals if no customer selected
+        $deals = $selectedCustomer 
+            ? Deal::where('customer_id', $selectedCustomer)->where('status', 'open')->get()
+            : Deal::where('status', 'open')->get();
+
+        return view('quote.create', compact('customers', 'vehicles', 'selectedCustomer', 'selectedVehicle', 'selectedDeal', 'deals'));
     }
 
     /**
@@ -32,19 +40,24 @@ class QuoteController extends Controller
         $data = $request->validate([
             'customer_id'     => 'required|exists:customers,id',
             'vehicle_id'      => 'required|exists:vehicles,id',
+            'deal_id'        => 'nullable|exists:deals,id',
             'finance_type'    => 'required|in:Hire Purchase,Finance Lease,Operating Lease,Business Contract Hire',
             'contract_length' => 'required|integer',
             'annual_mileage'  => 'required|integer',
             'payment_profile' => 'required|string',
             'deposit'         => 'required|numeric',
             'monthly_payment' => 'required|numeric',
-            'maintenance'     => 'required|boolean',
+            'maintenance'     => 'nullable|boolean',
             'document_fee'    => 'required|numeric',
         ]);
 
+        // Set maintenance to false if not provided
+        $data['maintenance'] = isset($data['maintenance']) ? true : false;
+
         $quote = Quote::create($data);
 
-        return redirect()->route('quote.review', ['id' => $quote->id]);
+        return redirect()->route('quote.review', ['id' => $quote->id])
+            ->with('success', 'Quote created successfully!');
     }
 
     /**
@@ -94,6 +107,14 @@ class QuoteController extends Controller
             // Update the quote status to indicate it was sent
             $quote->sent = true;
             $quote->save();
+
+            // Update deal status if this quote is part of a deal
+            if ($quote->deal_id) {
+                $deal = $quote->deal;
+                if ($deal->status === Deal::STATUS_INITIAL) {
+                    $deal->update(['status' => Deal::STATUS_QUOTE_SENT]);
+                }
+            }
 
             return redirect()->back()->with('success', 'Quote successfully emailed to ' . $customer->email);
                 
@@ -195,6 +216,14 @@ class QuoteController extends Controller
         // Update the quote status to 'confirmed'
         $quote->status = 'confirmed';
         $quote->save();
+
+        // Update deal status if this quote is part of a deal
+        if ($quote->deal_id) {
+            $deal = $quote->deal;
+            if ($deal->status === Deal::STATUS_QUOTE_SENT) {
+                $deal->update(['status' => Deal::STATUS_QUOTE_ACCEPTED]);
+            }
+        }
 
         // Check if the user is logged in
         if (Auth::check()) {

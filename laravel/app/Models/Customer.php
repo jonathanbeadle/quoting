@@ -25,4 +25,9 @@ class Customer extends Model
     {
         return $this->hasMany(\App\Models\Order::class);
     }
+
+    public function deals()
+    {
+        return $this->hasMany(\App\Models\Deal::class);
+    }
 }
