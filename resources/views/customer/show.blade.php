@@ -114,6 +114,54 @@
         </div>
     </div>
 
+    <!-- Deals Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Deals for {{ $customer->name }}</h5>
+        </div>
+        <div class="card-body">
+            @if($customer->deals->isEmpty())
+                <p class="text-muted">No deals found for this customer.</p>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Quotes</th>
+                                <th>Orders</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($customer->deals as $deal)
+                            <tr>
+                                <td>{{ $deal->id }}</td>
+                                <td>{{ $deal->title ?? 'No title' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $deal->status === Deal::STATUS_CLOSED ? 'secondary' : 'primary' }}">
+                                        {{ $deal->status }}
+                                    </span>
+                                </td>
+                                <td>{{ $deal->quotes->count() }}</td>
+                                <td>{{ $deal->orders->count() }}</td>
+                                <td>{{ $deal->created_at->format('d/m/Y') }}</td>
+                                <td>
+                                    <a href="{{ route('deal.show', ['id' => $deal->id]) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ route('deal.edit', ['id' => $deal->id]) }}" class="btn btn-sm btn-warning">Edit</a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Quotes Section -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">

@@ -10,6 +10,7 @@ class Order extends Model
     protected $fillable = [
         'quote_id',
         'customer_id',
+        'deal_id',
         'vehicle_id',
         'finance_type',
         'contract_length',
@@ -76,6 +77,11 @@ class Order extends Model
     public function quote()
     {
         return $this->belongsTo(Quote::class);
+    }
+
+    public function deal()
+    {
+        return $this->belongsTo(Deal::class);
     }
 
     public function customer()

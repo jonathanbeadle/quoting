@@ -58,7 +58,9 @@
         <!-- Total Quotes -->
         <div class="col-md-4">
             <div class="card text-white bg-primary mb-3">
-                <div class="card-header">Total Quotes</div>
+                <div class="card-header">
+                    <i class="bi bi-file-text me-2"></i>Total Quotes
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalQuotes }}</h5>
                     <a href="{{ route('quote.index') }}" class="btn btn-light btn-sm">View All Quotes</a>
@@ -68,7 +70,9 @@
         <!-- Total Orders -->
         <div class="col-md-4">
             <div class="card text-white bg-info mb-3">
-                <div class="card-header">Total Orders</div>
+                <div class="card-header">
+                    <i class="bi bi-cart me-2"></i>Total Orders
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalOrders }}</h5>
                     <a href="{{ route('order.index') }}" class="btn btn-light btn-sm">View All Orders</a>
@@ -78,7 +82,9 @@
         <!-- Confirmed Orders -->
         <div class="col-md-4">
             <div class="card text-white bg-secondary mb-3">
-                <div class="card-header">Confirmed Orders</div>
+                <div class="card-header">
+                    <i class="bi bi-check-circle me-2"></i>Confirmed Orders
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $confirmedOrders }}</h5>
                     <a href="{{ route('order.index') }}" class="btn btn-light btn-sm">View Confirmed</a>
@@ -92,7 +98,9 @@
         <!-- Quotes Sent -->
         <div class="col-md-4">
             <div class="card text-white bg-success mb-3">
-                <div class="card-header">Quotes Sent</div>
+                <div class="card-header">
+                    <i class="bi bi-envelope me-2"></i>Quotes Sent
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $sentQuotes }}</h5>
                     <a href="{{ route('quote.index') }}" class="btn btn-light btn-sm">View Sent Quotes</a>
@@ -102,7 +110,9 @@
         <!-- Total Customers -->
         <div class="col-md-4">
             <div class="card text-white bg-warning mb-3">
-                <div class="card-header">Total Customers</div>
+                <div class="card-header">
+                    <i class="bi bi-people me-2"></i>Total Customers
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalCustomers }}</h5>
                     <a href="{{ route('customer.index') }}" class="btn btn-light btn-sm">View Customers</a>
@@ -112,7 +122,9 @@
         <!-- Total Vehicles -->
         <div class="col-md-4">
             <div class="card text-white bg-danger mb-3">
-                <div class="card-header">Total Vehicles</div>
+                <div class="card-header">
+                    <i class="bi bi-truck me-2"></i>Total Vehicles
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalVehicles }}</h5>
                     <a href="{{ route('vehicle.index') }}" class="btn btn-light btn-sm">View Vehicles</a>

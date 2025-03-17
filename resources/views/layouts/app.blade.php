@@ -7,13 +7,16 @@
     <title>@yield('title', 'Dashboard') | Fleethub</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <!-- Custom Colors CSS -->
     <link href="{{ asset('css/custom-colors.css') }}" rel="stylesheet">
     
-    <!-- Custom CSS to prevent modal content shift -->
+    <!-- Custom CSS -->
     <style>
         html {
             overflow-y: scroll;
+            scrollbar-gutter: stable;
         }
         
         body {
@@ -101,7 +104,7 @@
     @else
         @include('layouts.navigation')
     @endif
-    
+
     <!-- Main Content Container -->
     <main class="py-4">
         <div class="container">

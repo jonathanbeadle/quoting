@@ -12,6 +12,7 @@ class Quote extends Model
 
     protected $fillable = [
         'customer_id',
+        'deal_id',
         'vehicle_id',
         'finance_type',
         'contract_length',
@@ -38,6 +39,11 @@ class Quote extends Model
     public function customer()
     {
         return $this->belongsTo(\App\Models\Customer::class);
+    }
+
+    public function deal()
+    {
+        return $this->belongsTo(\App\Models\Deal::class);
     }
 
     public function vehicle()

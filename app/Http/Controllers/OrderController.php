@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Quote;
+use App\Models\Deal;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -23,10 +24,11 @@ class OrderController extends Controller
     {
         $quote = Quote::findOrFail($quoteId);
 
-        // Create a new order by copying data from the quote.
+        // Create a new order by copying data from the quote, including deal_id
         $order = Order::create([
             'quote_id'        => $quote->id,
             'customer_id'     => $quote->customer_id,
+            'deal_id'        => $quote->deal_id,
             'vehicle_id'      => $quote->vehicle_id,
             'finance_type'    => $quote->finance_type,
             'contract_length' => $quote->contract_length,
@@ -48,6 +50,14 @@ class OrderController extends Controller
             'user_agent' => request()->userAgent(),
             'user_id' => auth()->id()
         ]);
+
+        // Update deal status if this order is part of a deal
+        if ($order->deal_id) {
+            $deal = $order->deal;
+            if ($deal->status === Deal::STATUS_QUOTE_ACCEPTED) {
+                $deal->update(['status' => Deal::STATUS_FINANCE_PROCESS]);
+            }
+        }
 
         return redirect()->route('order.review', ['id' => $order->id])
                          ->with('success', 'Order created from quote successfully!');
@@ -212,6 +222,14 @@ class OrderController extends Controller
         $order->status = 'confirmed';
         $order->save();
 
+        // Update deal status if this order is part of a deal
+        if ($order->deal_id) {
+            $deal = $order->deal;
+            if ($deal->status === Deal::STATUS_ORDER_SENT) {
+                $deal->update(['status' => Deal::STATUS_ORDER_ACCEPTED]);
+            }
+        }
+
         // Check if the user is logged in
         if (Auth::check()) {
             // If logged in, redirect to order index page
@@ -333,9 +351,17 @@ class OrderController extends Controller
                 'user_id' => auth()->id()
             ]);
             
-            // Update the order status to indicate it was sent
+            // Update the order sent status
             $order->sent = true;
             $order->save();
+
+            // Update deal status if this order is part of a deal
+            if ($order->deal_id) {
+                $deal = $order->deal;
+                if ($deal->status === Deal::STATUS_FINANCE_PROCESS) {
+                    $deal->update(['status' => Deal::STATUS_ORDER_SENT]);
+                }
+            }
 
             return redirect()->back()
                            ->with('success', 'Order successfully emailed to ' . $customer->email);
