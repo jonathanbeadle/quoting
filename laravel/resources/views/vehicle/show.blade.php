@@ -11,6 +11,9 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
     <!-- Vehicle Information Card -->
     <div class="card mb-3">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
@@ -48,21 +51,21 @@
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Make</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="make">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->make }}</span>
                                         <input type="text" class="form-control form-control-sm vehicle-edit d-none" name="make" value="{{ $vehicle->make }}" required>
                                     </div>
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Model</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="model">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->model }}</span>
                                         <input type="text" class="form-control form-control-sm vehicle-edit d-none" name="model" value="{{ $vehicle->model }}" required>
                                     </div>
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Transmission</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="transmission">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->transmission }}</span>
                                         <select class="form-select form-select-sm vehicle-edit d-none" name="transmission" required>
                                             <option value="Manual" {{ $vehicle->transmission == 'Manual' ? 'selected' : '' }}>Manual</option>
@@ -83,7 +86,7 @@
                             <div class="card-body p-1">
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Status</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="registration_status">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->registration_status }}</span>
                                         <select class="form-select form-select-sm vehicle-edit d-none" name="registration_status" required id="registrationStatus">
                                             <option value="New" {{ $vehicle->registration_status == 'New' ? 'selected' : '' }}>New</option>
@@ -92,7 +95,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div id="registrationDateRow" class="row py-1 {{ $vehicle->registration_status != 'Pre-Registered' ? 'd-none' : '' }}">
+                                <div id="registrationDateRow" class="row py-1 {{ $vehicle->registration_status != 'Pre-Registered' ? 'd-none' : '' }}" data-field="registration_date">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Reg. Date</label>
                                     <div class="col-8">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->registration_date }}</span>
@@ -101,7 +104,7 @@
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Fuel Type</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="fuel_type">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->fuel_type }}</span>
                                         <select class="form-select form-select-sm vehicle-edit d-none" name="fuel_type" required>
                                             <option value="Diesel" {{ $vehicle->fuel_type == 'Diesel' ? 'selected' : '' }}>Diesel</option>
@@ -113,7 +116,7 @@
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Colour</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="colour">
                                         <span class="vehicle-info form-control form-control-sm bg-light">{{ $vehicle->colour }}</span>
                                         <input type="text" class="form-control form-control-sm vehicle-edit d-none" name="colour" value="{{ $vehicle->colour }}" required>
                                     </div>
@@ -131,21 +134,21 @@
                             <div class="card-body p-1">
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Spec</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="specification">
                                         <span class="vehicle-info form-control form-control-sm bg-light" style="height: auto; min-height: calc(1.5em + 0.5rem + 2px);">{{ $vehicle->specification }}</span>
                                         <textarea class="form-control form-control-sm vehicle-edit d-none" name="specification" rows="2" required>{{ $vehicle->specification }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Add. Options</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="additional_options">
                                         <span class="vehicle-info form-control form-control-sm bg-light" style="height: auto; min-height: calc(1.5em + 0.5rem + 2px);">{{ $vehicle->additional_options ?: 'None' }}</span>
                                         <textarea class="form-control form-control-sm vehicle-edit d-none" name="additional_options" rows="2">{{ $vehicle->additional_options }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row py-1">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Dealer Fit</label>
-                                    <div class="col-8">
+                                    <div class="col-8" data-field="dealer_fit_options">
                                         <span class="vehicle-info form-control form-control-sm bg-light" style="height: auto; min-height: calc(1.5em + 0.5rem + 2px);">{{ $vehicle->dealer_fit_options ?: 'None' }}</span>
                                         <textarea class="form-control form-control-sm vehicle-edit d-none" name="dealer_fit_options" rows="2">{{ $vehicle->dealer_fit_options }}</textarea>
                                     </div>
@@ -275,11 +278,7 @@
         // Restore original values
         const editElements = document.querySelectorAll('.vehicle-edit');
         editElements.forEach(input => {
-            if (input.type === 'select-one') {
-                input.value = originalValues[input.name];
-            } else {
-                input.value = originalValues[input.name];
-            }
+            input.value = originalValues[input.name];
         });
         toggleEditMode();
     }
@@ -320,19 +319,38 @@
         })
         .then(data => {
             if (data.success) {
-                // Update displayed values
-                document.querySelector('td:has(input[name="make"]) .vehicle-info').textContent = formData.get('make');
-                document.querySelector('td:has(input[name="model"]) .vehicle-info').textContent = formData.get('model');
-                document.querySelector('td:has(textarea[name="specification"]) .vehicle-info').textContent = formData.get('specification');
-                document.querySelector('td:has(select[name="transmission"]) .vehicle-info').textContent = formData.get('transmission');
-                document.querySelector('td:has(select[name="fuel_type"]) .vehicle-info').textContent = formData.get('fuel_type');
-                document.querySelector('td:has(select[name="registration_status"]) .vehicle-info').textContent = formData.get('registration_status');
-                document.querySelector('td:has(input[name="registration_date"]) .vehicle-info').textContent = formData.get('registration_date') || '';
-                document.querySelector('td:has(input[name="colour"]) .vehicle-info').textContent = formData.get('colour');
-                document.querySelector('td:has(textarea[name="additional_options"]) .vehicle-info').textContent = formData.get('additional_options') || 'None';
-                document.querySelector('td:has(textarea[name="dealer_fit_options"]) .vehicle-info').textContent = formData.get('dealer_fit_options') || 'None';
+                // Safely update displayed values
+                const updateField = (fieldName, value, inputType = 'text') => {
+                    const container = document.querySelector(`[data-field="${fieldName}"]`);
+                    if (container) {
+                        const infoSpan = container.querySelector('.vehicle-info');
+                        if (infoSpan) {
+                            if (inputType === 'textarea') {
+                                infoSpan.textContent = value || 'None';
+                            } else {
+                                infoSpan.textContent = value;
+                            }
+                        }
+                    }
+                };
 
-                // Show success message
+                // Update all fields
+                updateField('make', formData.get('make'));
+                updateField('model', formData.get('model'));
+                updateField('specification', formData.get('specification'), 'textarea');
+                updateField('transmission', formData.get('transmission'));
+                updateField('fuel_type', formData.get('fuel_type'));
+                updateField('registration_status', formData.get('registration_status'));
+                updateField('registration_date', formData.get('registration_date'));
+                updateField('colour', formData.get('colour'));
+                updateField('additional_options', formData.get('additional_options'), 'textarea');
+                updateField('dealer_fit_options', formData.get('dealer_fit_options'), 'textarea');
+
+                // Remove any existing alerts
+                const existingAlerts = document.querySelectorAll('.alert');
+                existingAlerts.forEach(alert => alert.remove());
+
+                // Create success message
                 const alert = document.createElement('div');
                 alert.className = 'alert alert-success alert-dismissible fade show';
                 alert.innerHTML = `
@@ -340,8 +358,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
                 
-                const firstCard = document.querySelector('.card');
-                firstCard.parentNode.insertBefore(alert, firstCard);
+                // Insert alert into the alertContainer
+                const alertContainer = document.getElementById('alertContainer');
+                alertContainer.appendChild(alert);
 
                 // Exit edit mode
                 toggleEditMode();
@@ -349,6 +368,12 @@
         })
         .catch(error => {
             console.error('Error:', error);
+            
+            // Remove any existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create and insert error alert
             const alert = document.createElement('div');
             alert.className = 'alert alert-danger alert-dismissible fade show';
             alert.innerHTML = `
@@ -356,8 +381,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
             
-            const firstCard = document.querySelector('.card');
-            firstCard.parentNode.insertBefore(alert, firstCard);
+            // Insert alert into the alertContainer
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.appendChild(alert);
         });
     }
 

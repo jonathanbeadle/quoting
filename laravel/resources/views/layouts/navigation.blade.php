@@ -21,13 +21,13 @@
                         <a class="nav-link {{ request()->routeIs('quote.*') ? 'active' : '' }}" href="{{ route('quote.index') }}">Quotes</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('order.*') ? 'active' : '' }}" href="{{ route('order.index') }}">Orders</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}" href="{{ route('customer.index') }}">Customers</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('vehicle.*') ? 'active' : '' }}" href="{{ route('vehicle.index') }}">Vehicles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('order.*') ? 'active' : '' }}" href="{{ route('order.index') }}">Orders</a>
                     </li>
                 @endauth
             </ul>

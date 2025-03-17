@@ -6,11 +6,24 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Review Order</h1>
-        @if($order->sent)
-            <span class="badge bg-success">Sent to {{ $order->customer->email }}</span>
-        @else
-            <span class="badge bg-secondary">Not Sent</span>
-        @endif
+        <div class="d-flex gap-2 align-items-center">
+            @if($order->sent)
+                <span class="badge bg-success">Sent to {{ $order->customer->email }}</span>
+            @else
+                <span class="badge bg-secondary">Not Sent</span>
+            @endif
+            
+            <form action="{{ route('order.send', ['id' => $order->id]) }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-success" {{ empty($order->customer->email) ? 'disabled' : '' }}>
+                    {{ $order->sent ? 'Resend Order' : 'Send Order' }}
+                </button>
+            </form>
+
+            <button id="editOrderBtn" class="btn btn-sm btn-warning" onclick="handleEditClick()">
+                Edit Order
+            </button>
+        </div>
     </div>
     
     @if(session('success'))
@@ -228,10 +241,10 @@
                                 <form action="{{ route('order.send', ['id' => $order->id]) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-success" {{ empty($order->customer->email) ? 'disabled' : '' }}>
-                                        {{ $order->sent ? 'Resend Order Email' : 'Send Order Email' }}
+                                        {{ $order->sent ? 'Resend Order' : 'Send Order' }}
                                     </button>
                                 </form>
-                                
+
                                 <a href="{{ route('order.viewByToken', ['token' => $order->token]) }}" class="btn btn-sm btn-info" target="_blank">
                                     Preview Order
                                 </a>
@@ -299,6 +312,15 @@
                                         @case('resent')
                                             <span class="badge bg-warning">Email Resent</span>
                                             @break
+                                        @case('duplicated')
+                                            <span class="badge bg-secondary">Duplicated</span>
+                                            @if(isset(json_decode($track->metadata, true)['duplicated_from']))
+                                                <small class="text-muted">From Order #{{ str_pad(json_decode($track->metadata, true)['duplicated_from'], 3, '0', STR_PAD_LEFT) }}</small>
+                                            @endif
+                                            @break
+                                        @case('updated')
+                                            <span class="badge bg-primary">Updated</span>
+                                            @break
                                     @endswitch
                                 </td>
                                 <td>{{ $track->ip_address }}</td>
@@ -318,6 +340,29 @@
     </div>
 </div>
 
+<!-- Duplicate Order Modal -->
+<div class="modal fade" id="duplicateOrderModal" tabindex="-1" aria-labelledby="duplicateOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="duplicateOrderModalLabel">Cannot Edit Sent Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This order has already been sent to the customer and cannot be edited.</p>
+                <p>Would you like to create a duplicate order that you can edit?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('order.duplicate', ['id' => $order->id]) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Create Duplicate Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function copyOrderUrl() {
     var copyText = document.getElementById("orderUrl");
@@ -332,6 +377,20 @@ function copyOrderUrl() {
     setTimeout(function() {
         btn.innerText = originalText;
     }, 2000);
+}
+
+function handleEditClick() {
+    // Check if the order has been sent
+    const orderSent = {{ $order->sent ? 'true' : 'false' }};
+    
+    if (orderSent) {
+        // Show the modal if the order has been sent
+        var duplicateModal = new bootstrap.Modal(document.getElementById('duplicateOrderModal'));
+        duplicateModal.show();
+    } else {
+        // Redirect to edit page if the order hasn't been sent
+        window.location.href = "{{ route('order.edit', ['id' => $order->id]) }}";
+    }
 }
 </script>
 @endsection

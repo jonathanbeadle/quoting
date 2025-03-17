@@ -4,6 +4,9 @@
 
 @section('content')
 <div class="container">
+    <!-- Success/Error Alert Container -->
+    <div id="alertContainer"></div>
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -46,7 +49,7 @@
                                         <div class="form-control form-control-sm bg-light">{{ $customer->id }}</div>
                                     </div>
                                 </div>
-                                <div class="row py-1">
+                                <div class="row py-1" data-field="business_name">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Business Name</label>
                                     <div class="col-8">
                                         <span class="customer-info form-control form-control-sm bg-light">{{ $customer->business_name }}</span>
@@ -78,14 +81,14 @@
                                 <h6 class="mb-0">Contact Details</h6>
                             </div>
                             <div class="card-body p-1">
-                                <div class="row py-1">
+                                <div class="row py-1" data-field="name">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Name</label>
                                     <div class="col-8">
                                         <span class="customer-info form-control form-control-sm bg-light">{{ $customer->name }}</span>
                                         <input type="text" class="form-control form-control-sm customer-edit d-none" name="name" value="{{ $customer->name }}" required>
                                     </div>
                                 </div>
-                                <div class="row py-1">
+                                <div class="row py-1" data-field="email">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Email</label>
                                     <div class="col-8">
                                         <span class="customer-info form-control form-control-sm bg-light">
@@ -94,7 +97,7 @@
                                         <input type="email" class="form-control form-control-sm customer-edit d-none" name="email" value="{{ $customer->email }}" required>
                                     </div>
                                 </div>
-                                <div class="row py-1">
+                                <div class="row py-1" data-field="phone">
                                     <label class="col-4 col-form-label col-form-label-sm fw-bold">Phone</label>
                                     <div class="col-8">
                                         <span class="customer-info form-control form-control-sm bg-light">
@@ -375,14 +378,12 @@
         })
         .then(response => {
             if (response.redirected) {
-                // Session expired, redirect to login
                 window.location.href = response.url;
                 return;
             }
             
             if (!response.ok) {
                 if (response.status === 419) {
-                    // CSRF token mismatch
                     window.location.reload();
                     throw new Error('Your session has expired. Please try again.');
                 }
@@ -394,19 +395,35 @@
         })
         .then(data => {
             if (data.success) {
-                // Update displayed values
-                document.querySelector('td:has(input[name="name"]) .customer-info').textContent = formData.get('name');
-                document.querySelector('td:has(input[name="business_name"]) .customer-info').textContent = formData.get('business_name');
-                
-                const emailElement = document.querySelector('td:has(input[name="email"]) .customer-info a');
-                emailElement.textContent = formData.get('email');
-                emailElement.href = 'mailto:' + formData.get('email');
-                
-                const phoneElement = document.querySelector('td:has(input[name="phone"]) .customer-info a');
-                phoneElement.textContent = formData.get('phone');
-                phoneElement.href = 'tel:' + formData.get('phone');
+                // Safely update displayed values
+                const updateField = (fieldName, value, linkType = null) => {
+                    const container = document.querySelector(`[data-field="${fieldName}"]`);
+                    if (container) {
+                        const infoSpan = container.querySelector('.customer-info');
+                        if (infoSpan) {
+                            if (linkType) {
+                                const link = infoSpan.querySelector('a');
+                                if (link) {
+                                    link.textContent = value;
+                                    link.href = `${linkType}:${value}`;
+                                }
+                            } else {
+                                infoSpan.textContent = value;
+                            }
+                        }
+                    }
+                };
 
-                // Show success message - Fixed alert insertion
+                updateField('name', formData.get('name'));
+                updateField('business_name', formData.get('business_name'));
+                updateField('email', formData.get('email'), 'mailto');
+                updateField('phone', formData.get('phone'), 'tel');
+
+                // Remove any existing alerts
+                const existingAlerts = document.querySelectorAll('.alert');
+                existingAlerts.forEach(alert => alert.remove());
+
+                // Create and insert success message
                 const alert = document.createElement('div');
                 alert.className = 'alert alert-success alert-dismissible fade show';
                 alert.innerHTML = `
@@ -414,9 +431,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
                 
-                // Find the first card and insert alert before it
-                const firstCard = document.querySelector('.card');
-                firstCard.parentNode.insertBefore(alert, firstCard);
+                // Insert alert into the alertContainer
+                const alertContainer = document.getElementById('alertContainer');
+                alertContainer.appendChild(alert);
 
                 // Exit edit mode
                 toggleEditMode();
@@ -424,6 +441,12 @@
         })
         .catch(error => {
             console.error('Error:', error);
+            
+            // Remove any existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create and insert error alert
             const alert = document.createElement('div');
             alert.className = 'alert alert-danger alert-dismissible fade show';
             alert.innerHTML = `
@@ -431,9 +454,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
             
-            // Find the first card and insert alert before it
-            const firstCard = document.querySelector('.card');
-            firstCard.parentNode.insertBefore(alert, firstCard);
+            // Insert alert into the alertContainer
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.appendChild(alert);
         });
     }
 </script>

@@ -6,11 +6,24 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Review Quote</h1>
-        @if($quote->sent)
-            <span class="badge bg-success">Sent to {{ $quote->customer->email }}</span>
-        @else
-            <span class="badge bg-secondary">Not Sent</span>
-        @endif
+        <div class="d-flex gap-2 align-items-center">
+            @if($quote->sent)
+                <span class="badge bg-success">Sent to {{ $quote->customer->email }}</span>
+            @else
+                <span class="badge bg-secondary">Not Sent</span>
+            @endif
+
+            <form action="{{ route('quote.send', ['id' => $quote->id]) }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-success" {{ empty($quote->customer->email) ? 'disabled' : '' }}>
+                    {{ $quote->sent ? 'Resend Quote' : 'Send Quote' }}
+                </button>
+            </form>
+            
+            <button id="editQuoteBtn" class="btn btn-sm btn-warning" onclick="handleEditClick()">
+                Edit Quote
+            </button>
+        </div>
     </div>
     
     @if(session('success'))
@@ -315,6 +328,29 @@
     </div>
 </div>
 
+<!-- Duplicate Quote Modal -->
+<div class="modal fade" id="duplicateQuoteModal" tabindex="-1" aria-labelledby="duplicateQuoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="duplicateQuoteModalLabel">Cannot Edit Sent Quote</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This quote has already been sent to the customer and cannot be edited.</p>
+                <p>Would you like to create a duplicate quote that you can edit?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('quote.duplicate', ['id' => $quote->id]) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Create Duplicate Quote</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function copyQuoteUrl() {
     var copyText = document.getElementById("quoteUrl");
@@ -329,6 +365,20 @@ function copyQuoteUrl() {
     setTimeout(function() {
         btn.innerText = originalText;
     }, 2000);
+}
+
+function handleEditClick() {
+    // Check if the quote has been sent
+    const quoteSent = {{ $quote->sent ? 'true' : 'false' }};
+    
+    if (quoteSent) {
+        // Show the modal if the quote has been sent
+        var duplicateModal = new bootstrap.Modal(document.getElementById('duplicateQuoteModal'));
+        duplicateModal.show();
+    } else {
+        // Redirect to edit page if the quote hasn't been sent
+        window.location.href = "{{ route('quote.edit', ['id' => $quote->id]) }}";
+    }
 }
 </script>
 @endsection

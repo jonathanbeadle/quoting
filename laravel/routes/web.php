@@ -44,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/quote/send/{id}', [QuoteController::class, 'send'])->name('quote.send');
     Route::post('/quote/status/{id}', [QuoteController::class, 'updateStatus'])->name('quote.updateStatus');
     Route::get('/quotes', [QuoteController::class, 'index'])->name('quote.index');
+    Route::get('/quotes/{id}/edit', [QuoteController::class, 'edit'])->name('quote.edit');
+    Route::put('/quotes/{id}', [QuoteController::class, 'update'])->name('quote.update');
+    Route::post('/quotes/{id}/duplicate', [QuoteController::class, 'duplicate'])->name('quote.duplicate');
 
     // Order routes
     Route::get('/order/create-from-quote/{quoteId}', [OrderController::class, 'createFromQuote'])->name('order.createFromQuote');
@@ -56,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/order/{id}/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
     Route::get('/order/review/{id}', [OrderController::class, 'review'])->name('order.review');
     Route::post('/order/status/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+    Route::post('/order/{id}/duplicate', [OrderController::class, 'duplicate'])->name('order.duplicate');
 
     // Customer routes
     Route::get('/customer/create', [CustomerController::class, 'create'])->name('customer.create');
