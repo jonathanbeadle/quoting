@@ -1,3 +1,5 @@
+@php use App\Models\Deal; @endphp
+
 @extends('layouts.app')
 
 @section('title', 'All Deals')

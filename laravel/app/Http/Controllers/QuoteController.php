@@ -24,10 +24,10 @@ class QuoteController extends Controller
         $selectedVehicle  = $request->query('vehicle_id', null);
         $selectedDeal = $request->query('deal_id', null);
         
-        // Get open deals for the selected customer, or all open deals if no customer selected
+        // Get non-closed deals for the selected customer, or all non-closed deals if no customer selected
         $deals = $selectedCustomer 
-            ? Deal::where('customer_id', $selectedCustomer)->where('status', 'open')->get()
-            : Deal::where('status', 'open')->get();
+            ? Deal::where('customer_id', $selectedCustomer)->where('status', '!=', Deal::STATUS_CLOSED)->get()
+            : Deal::where('status', '!=', Deal::STATUS_CLOSED)->get();
 
         return view('quote.create', compact('customers', 'vehicles', 'selectedCustomer', 'selectedVehicle', 'selectedDeal', 'deals'));
     }
