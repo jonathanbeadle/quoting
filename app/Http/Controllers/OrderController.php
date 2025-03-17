@@ -62,6 +62,13 @@ class OrderController extends Controller
     public function edit($orderId)
     {
         $order = Order::findOrFail($orderId);
+        
+        // Prevent editing orders that have been sent
+        if ($order->sent) {
+            return redirect()->route('order.review', ['id' => $orderId])
+                           ->with('error', 'This order has already been sent and cannot be edited. Please create a duplicate order to make changes.');
+        }
+        
         return view('order.edit', compact('order'));
     }
 
@@ -75,6 +82,12 @@ class OrderController extends Controller
     public function update(Request $request, $orderId)
     {
         $order = Order::findOrFail($orderId);
+        
+        // Prevent updating orders that have been sent
+        if ($order->sent) {
+            return redirect()->route('order.review', ['id' => $orderId])
+                           ->with('error', 'This order has already been sent and cannot be edited. Please create a duplicate order to make changes.');
+        }
 
         $data = $request->validate([
             'finance_type'    => 'required|string',
@@ -102,7 +115,7 @@ class OrderController extends Controller
             'user_id' => auth()->id()
         ]);
 
-        return redirect()->route('order.view', $order->id)
+        return redirect()->route('order.review', ['id' => $orderId])
                          ->with('success', 'Order updated successfully.');
     }
 
@@ -332,5 +345,47 @@ class OrderController extends Controller
             return redirect()->back()
                            ->with('error', 'Failed to send email: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Duplicate an existing order.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function duplicate($id)
+    {
+        $originalOrder = Order::findOrFail($id);
+        
+        // Create a new order by copying data from the original order
+        $newOrder = Order::create([
+            'quote_id'        => $originalOrder->quote_id,
+            'customer_id'     => $originalOrder->customer_id,
+            'vehicle_id'      => $originalOrder->vehicle_id,
+            'finance_type'    => $originalOrder->finance_type,
+            'contract_length' => $originalOrder->contract_length,
+            'annual_mileage'  => $originalOrder->annual_mileage,
+            'payment_profile' => $originalOrder->payment_profile,
+            'deposit'         => $originalOrder->deposit,
+            'monthly_payment' => $originalOrder->monthly_payment,
+            'maintenance'     => $originalOrder->maintenance,
+            'document_fee'    => $originalOrder->document_fee,
+            'status'          => 'pending', // Always start as pending
+            'token'           => Str::random(20), // Generate a new unique token
+            'expires_at'      => now()->addDays(28), // Reset expiry period
+            'sent'            => false // Mark as not sent
+        ]);
+
+        // Create a tracking record for the duplication
+        $newOrder->tracking()->create([
+            'event_type' => 'duplicated',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'user_id' => auth()->id(),
+            'metadata' => json_encode(['duplicated_from' => $originalOrder->id])
+        ]);
+
+        return redirect()->route('order.review', ['id' => $newOrder->id])
+                         ->with('success', 'Order has been duplicated successfully. You can now edit this copy.');
     }
 }

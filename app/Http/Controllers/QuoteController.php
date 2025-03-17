@@ -230,4 +230,91 @@ class QuoteController extends Controller
 
         return redirect()->back()->with('success', 'Quote status updated successfully!');
     }
+
+    /**
+     * Show the edit form for a quote.
+     */
+    public function edit($id)
+    {
+        $quote = Quote::with(['customer', 'vehicle'])->findOrFail($id);
+        
+        // Prevent editing sent quotes
+        if ($quote->sent) {
+            return redirect()->route('quote.review', ['id' => $id])
+                           ->with('error', 'This quote has already been sent and cannot be edited. Please create a duplicate quote to make changes.');
+        }
+
+        return view('quote.edit', compact('quote'));
+    }
+
+    /**
+     * Update the quote details.
+     */
+    public function update(Request $request, $id)
+    {
+        $quote = Quote::findOrFail($id);
+        
+        // Prevent updating quotes that have been sent
+        if ($quote->sent) {
+            return redirect()->route('quote.review', ['id' => $id])
+                           ->with('error', 'This quote has already been sent and cannot be edited. Please create a duplicate quote to make changes.');
+        }
+
+        $data = $request->validate([
+            'finance_type'    => 'required|string',
+            'contract_length' => 'required|integer',
+            'annual_mileage'  => 'required|integer',
+            'payment_profile' => 'required|string',
+            'deposit'         => 'required|numeric',
+            'monthly_payment' => 'required|numeric',
+            'maintenance'     => 'boolean',
+            'document_fee'    => 'required|numeric'
+        ]);
+
+        // Set maintenance to false if not provided in the request
+        if (!isset($data['maintenance'])) {
+            $data['maintenance'] = false;
+        }
+
+        $quote->update($data);
+
+        // Track the update
+        $quote->tracking()->create([
+            'event_type' => 'updated',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'user_id' => auth()->id()
+        ]);
+
+        return redirect()->route('quote.review', ['id' => $id])
+                       ->with('success', 'Quote updated successfully.');
+    }
+
+    /**
+     * Duplicate a quote.
+     */
+    public function duplicate($id)
+    {
+        $originalQuote = Quote::findOrFail($id);
+        
+        // Create a new quote with the same details
+        $newQuote = $originalQuote->replicate();
+        $newQuote->sent = false;
+        $newQuote->status = 'active';
+        $newQuote->token = Str::uuid();
+        $newQuote->expires_at = now()->addDays(28);
+        $newQuote->save();
+
+        // Track the duplication
+        $newQuote->tracking()->create([
+            'event_type' => 'duplicated',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'user_id' => auth()->id(),
+            'metadata' => json_encode(['duplicated_from' => $originalQuote->id])
+        ]);
+
+        return redirect()->route('quote.review', ['id' => $newQuote->id])
+                       ->with('success', 'Quote duplicated successfully. You can now make changes to this new quote.');
+    }
 }
