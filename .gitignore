@@ -1,4 +1,6 @@
 /node_modules
+/laravel/node_modules
+/laravel/vendor
 /public/build
 /public/hot
 /public/storage

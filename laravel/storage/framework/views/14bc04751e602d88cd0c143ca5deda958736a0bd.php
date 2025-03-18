@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Dashboard'); ?> | Fleethub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <!-- Custom Colors CSS -->
+    <link href="<?php echo e(asset('css/custom-colors.css')); ?>" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        html {
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+        }
+        
+        body {
+            padding-right: 0 !important;
+        }
+        
+        body.modal-open {
+            overflow-y: hidden;
+            padding-right: 0 !important;
+        }
+        
+        .modal {
+            padding-right: 0 !important;
+        }
+        
+        /* Navigation active item highlight */
+        .nav-item .active {
+            background:rgb(243, 243, 243);
+            border-radius: 4px;
+        }
+        
+        /* Pagination styling fixes */
+        .pagination {
+            margin-bottom: 0;
+        }
+        
+        .pagination .page-item .page-link {
+            font-size: 14px;
+            padding: 0.375rem 0.75rem;
+            line-height: 1.5;
+            color: #1b9e8c;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: #1b9e8c;
+            border-color: #1b9e8c;
+            color: #ffffff;
+        }
+        
+        .pagination .page-item .page-link:hover {
+            color: #157165;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-item.active .page-link:hover {
+            color: #ffffff;
+            background-color: #157165;
+            border-color: #157165;
+        }
+        
+        .pagination .page-item:first-child .page-link,
+        .pagination .page-item:last-child .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pagination .disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+        
+        /* Optional: Style the scrollbar to be less obtrusive */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <?php if (! empty(trim($__env->yieldContent('hide_navbar')))): ?>
+        <!-- Navigation bar is hidden -->
+    <?php else: ?>
+        <?php echo $__env->make('layouts.navigation', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php endif; ?>
+
+    <!-- Main Content Container -->
+    <main class="py-4">
+        <div class="container">
+            <?php if(session('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <?php echo e(session('success')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <?php echo e(session('error')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php echo $__env->yieldContent('content'); ?>
+        </div>
+    </main>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Yield scripts section for page-specific JavaScript -->
+    <?php echo $__env->yieldContent('scripts'); ?>
+</body>
+</html>
+<?php /**PATH C:\Users\Jonny\Desktop\production\quoting\laravel\resources\views/layouts/app.blade.php ENDPATH**/ ?>
