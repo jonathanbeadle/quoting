@@ -381,6 +381,10 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('dragstart', handleDragStart);
         item.addEventListener('dragend', handleDragEnd);
         item.setAttribute('draggable', 'true');
+        
+        // Add event to prevent dropping on items
+        item.addEventListener('dragover', preventDragOver);
+        item.addEventListener('drop', preventDrop);
     });
     
     // Add event listeners to each column
@@ -390,6 +394,19 @@ document.addEventListener('DOMContentLoaded', function() {
         column.addEventListener('dragleave', handleDragLeave);
         column.addEventListener('drop', handleDrop);
     });
+    
+    // Prevent dropping on kanban items
+    function preventDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
+    function preventDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
     
     // Drag start event handler
     function handleDragStart(e) {
@@ -425,12 +442,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Drag over event handler
     function handleDragOver(e) {
         e.preventDefault();
+        
+        // Check if target is a kanban item
+        if (e.target.closest('.kanban-item') && e.target !== draggingElement) {
+            return false;
+        }
+        
         e.dataTransfer.dropEffect = 'move';
         return false;
     }
     
     // Drag enter event handler
     function handleDragEnter(e) {
+        // Prevent drag enter if the target is a kanban item
+        if (e.target.closest('.kanban-item') && e.target !== draggingElement) {
+            return false;
+        }
+        
         this.classList.add('drag-over');
         
         // Insert placeholder if it exists
@@ -448,6 +476,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleDrop(e) {
         e.stopPropagation();
         e.preventDefault();
+        
+        // Check if drop target is a kanban item
+        if (e.target.closest('.kanban-item') && e.target !== draggingElement) {
+            return false;
+        }
         
         this.classList.remove('drag-over');
         
