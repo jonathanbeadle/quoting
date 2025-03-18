@@ -106,13 +106,7 @@
                             <i class="bi bi-box-arrow-in-right"></i> Log in
                         </a>
                     </li>
-                    @if (Route::has('register'))
-                        <li class="nav-item">
-                            <a href="{{ route('register') }}" class="nav-link">
-                                <i class="bi bi-person-plus"></i> Register
-                            </a>
-                        </li>
-                    @endif
+                    <!-- Registration link removed -->
                 @endauth
             </ul>
         </div>

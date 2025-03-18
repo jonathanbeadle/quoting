@@ -67,14 +67,7 @@
                             </button>
                         </div>
                         
-                        @if (Route::has('register'))
-                            <div class="mt-3 text-center">
-                                <span>Don't have an account?</span> 
-                                <a class="text-decoration-none" href="{{ route('register') }}">
-                                    {{ __('Register') }}
-                                </a>
-                            </div>
-                        @endif
+                        <!-- Registration link removed -->
                     </form>
                 </div>
             </div>
